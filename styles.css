@@ -581,7 +581,7 @@ header {
 }
 
 /* ----------------------------------------------------
-   LAYOUT 1: SINGLE HERO (FULL 100% WIDTH BOLD DISPLAY)
+   LAYOUT 1: SINGLE HERO (MATCHING SCREENSHOT 1 PROPORTIONS)
    ---------------------------------------------------- */
 .layout-single-hero {
   height: 100%;
@@ -589,13 +589,15 @@ header {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  gap: 12px;
+  gap: 10px;
 }
 
 .layout-single-hero .photo-frame {
   width: 100% !important;
-  height: 480px;
-  flex: 1;
+  height: 405px !important;
+  max-height: 405px !important;
+  min-height: 405px !important;
+  flex: none !important;
   border-radius: 8px;
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
   overflow: hidden;
@@ -610,18 +612,19 @@ header {
 
 .layout-single-hero .caption-block {
   text-align: center;
-  padding: 0 4px;
+  padding: 2px 4px 0;
 }
 
 .layout-single-hero .caption-title {
   font-family: 'Newsreader', Georgia, serif;
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 600;
   color: #1A1614;
+  line-height: 1.25;
 }
 
 .layout-single-hero .caption-meta {
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--paper-muted);
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -681,52 +684,48 @@ header {
 }
 
 /* ----------------------------------------------------
-   LAYOUT 3: TWO-IMAGE ZIGZAG / ASYMMETRICAL
+   LAYOUT 3: DUAL EQUAL (EXACT SAME 220PX HEIGHT FOR BOTH IMAGES)
    ---------------------------------------------------- */
+.layout-dual-equal,
 .layout-zigzag {
   height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 14px;
+  gap: 12px;
 }
 
-.layout-zigzag .item-top {
-  width: 84%;
-  height: 48%;
-  align-self: flex-start;
+.layout-dual-equal .photo-frame,
+.layout-zigzag .photo-frame {
+  width: 100% !important;
+  height: 220px !important;
+  min-height: 220px !important;
+  max-height: 220px !important;
+  flex: none !important;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+  overflow: hidden;
 }
 
-.layout-zigzag .item-bottom {
-  width: 84%;
-  height: 48%;
-  align-self: flex-end;
+.layout-dual-equal .photo-frame img,
+.layout-zigzag .photo-frame img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block;
 }
 
+.layout-dual-equal .story-note,
 .layout-zigzag .story-note {
   font-family: 'Newsreader', Georgia, serif;
   font-style: italic;
   font-size: 13.5px;
-  line-height: 1.45;
+  line-height: 1.4;
   color: #5A534B;
-  padding: 2px 4px;
   text-align: center;
-}
-
-/* ----------------------------------------------------
-   LAYOUT 4: VERTICAL DIPTYCH
-   ---------------------------------------------------- */
-.layout-diptych {
-  height: 100%;
-  display: flex;
-  gap: 16px;
-  align-items: stretch;
-}
-
-.layout-diptych .photo-frame {
-  flex: 1;
-  height: 90%;
-  border-radius: 4px;
+  padding: 0 8px;
+  margin: auto 0;
 }
 
 /* ----------------------------------------------------
