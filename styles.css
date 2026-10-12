@@ -569,31 +569,33 @@ header {
 }
 
 /* ----------------------------------------------------
-   LAYOUT 1: SINGLE HERO (100% FULL HEIGHT & FULL WIDTH)
+   LAYOUT 1: SINGLE HERO (EXACT SCREENSHOT 1 PROPORTIONS: 405PX CENTERED)
    ---------------------------------------------------- */
 .layout-single-hero {
   height: 100%;
   width: 100%;
-  display: flex;
-  flex-direction: column;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
 }
 
 .layout-single-hero .photo-frame {
   width: 100% !important;
-  height: 100% !important;
-  max-height: none !important;
-  min-height: 0 !important;
-  flex: 1 !important;
-  border-radius: 6px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
-  overflow: hidden;
+  height: 405px !important;
+  max-height: 405px !important;
+  min-height: 405px !important;
+  flex: none !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18) !important;
+  overflow: hidden !important;
 }
 
 .layout-single-hero .photo-frame img {
   width: 100% !important;
   height: 100% !important;
   object-fit: cover !important;
-  display: block;
+  display: block !important;
 }
 
 /* ----------------------------------------------------
@@ -1571,6 +1573,11 @@ header {
     width: 44px;
     height: 44px;
     border-radius: 12px;
+  }
+  .layout-single-hero .photo-frame {
+    height: 270px !important;
+    max-height: 270px !important;
+    min-height: 270px !important;
   }
 }
 

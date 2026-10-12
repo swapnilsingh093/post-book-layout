@@ -14,13 +14,16 @@ const SPREAD_NAMES = [
   "Spread 4 • Asymmetric Duo & Solo Hero",
   "Spread 5 • Inverted Zigzag & Full-Width Gallery Duo",
   "Spread 6 • Azure Coast Double-Page Panorama",
-  "Spread 7 • Coastal Zigzag & Night Rim",
-  "Spread 8 • Asymmetric Duo & Finale Plate",
+  "Spread 7 • Coastal Zigzag & Night Rim Hero",
+  "Spread 8 • Asymmetric Duo & Solitary Dusk",
+  "Spread 9 • Alpine Valley & Jagged Spires",
+  "Spread 10 • Canyon Highway & Sunbeam Cathedral",
+  "Spread 11 • Meadow Bloom & Sea Caves",
   "Back Cover • Lumen Editions"
 ];
 
 let currentSpread = 0;
-const totalLeaves = 9; // Leaves 0 to 8
+const totalLeaves = 12; // Leaves 0 to 11
 let soundEnabled = true;
 let autoPlayInterval = null;
 let audioContext = null;
