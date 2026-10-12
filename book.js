@@ -192,6 +192,12 @@ function updateUI() {
       card.classList.remove('active');
     }
   });
+
+  // Update Unified Panoramic Spread Floating Center Captions (One title across both pages)
+  const cap3 = document.getElementById('spreadCap3');
+  const cap6 = document.getElementById('spreadCap6');
+  if (cap3) cap3.classList.toggle('active', currentSpread === 3);
+  if (cap6) cap6.classList.toggle('active', currentSpread === 6);
 }
 
 // ==========================================================================
