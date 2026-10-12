@@ -1,0 +1,1384 @@
+/* ==========================================================================
+   LUMEN PHOTOBOOK - REALISTIC 3D INTERACTIVE BOOK GALLERY
+   ========================================================================== */
+
+:root {
+  --bg-dark: #0D0B14;
+  --bg-gradient: radial-gradient(1200px 700px at 50% 10%, #2A2140 0%, #111019 60%, #0A0910 100%);
+  --accent: #FF5A36;
+  --accent-gold: #E2A755;
+  --paper: #FAF6F0;
+  --paper-texture: #F5EFE6;
+  --paper-text: #24201D;
+  --paper-muted: #7A726A;
+  --spine-shadow: rgba(28, 18, 10, 0.35);
+  --cover-bg: #171424;
+  --book-width: 960px;
+  --book-height: 640px;
+  --page-width: 480px;
+  --page-height: 640px;
+  --transition-speed: 1.15s;
+  --transition-ease: cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Figtree', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg-dark);
+  background-image: var(--bg-gradient);
+  color: #FFFFFF;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   HEADER & NAVIGATION
+   ========================================================================== */
+header {
+  width: 100%;
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 18px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  z-index: 100;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #FFFFFF;
+}
+
+.brand-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent) 0%, #FF8552 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #111;
+  box-shadow: 0 4px 16px rgba(255, 90, 54, 0.35);
+}
+
+.brand-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 800;
+  font-size: 26px;
+  letter-spacing: -0.02em;
+}
+
+.brand-subtitle {
+  font-size: 13px;
+  color: #A3A8BA;
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #E3E6F0;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(8px);
+}
+
+.header-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
+  transform: translateY(-1px);
+}
+
+.header-btn.active {
+  background: var(--accent);
+  color: #111;
+  border-color: var(--accent);
+}
+
+/* ==========================================================================
+   MAIN HERO & INTRO
+   ========================================================================== */
+.gallery-intro {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 10px 20px 26px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.tag-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 99px;
+  background: rgba(255, 90, 54, 0.12);
+  border: 1px solid rgba(255, 90, 54, 0.35);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.tag-badge .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+.main-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #FFFFFF;
+}
+
+.intro-desc {
+  color: #A6ACBE;
+  font-size: 16px;
+  max-width: 580px;
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+   3D BOOK STAGE & ENVIRONMENT
+   ========================================================================== */
+.book-stage {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 20px 20px;
+  perspective: 2400px;
+  overflow: visible;
+}
+
+.book-container {
+  position: relative;
+  width: var(--book-width);
+  height: var(--book-height);
+  transform-style: preserve-3d;
+  transition: transform 0.4s ease;
+}
+
+/* Hardcover base & stacked paper edges simulation */
+.book-shadow {
+  position: absolute;
+  inset: -15px -25px -35px -25px;
+  border-radius: 20px;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.45) 55%, transparent 75%);
+  pointer-events: none;
+  z-index: -2;
+  filter: blur(14px);
+}
+
+.book-cover-base {
+  position: absolute;
+  top: -6px;
+  bottom: -6px;
+  left: -8px;
+  right: -8px;
+  border-radius: 12px;
+  background: #110E1D;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7), 0 10px 25px rgba(0, 0, 0, 0.45);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Spine groove in the center */
+.spine-ridge {
+  position: absolute;
+  top: -8px;
+  bottom: -8px;
+  left: 50%;
+  width: 32px;
+  transform: translateX(-50%);
+  background: linear-gradient(to right, 
+    rgba(0,0,0,0.6) 0%, 
+    rgba(255,255,255,0.06) 20%, 
+    rgba(10,8,15,0.95) 50%, 
+    rgba(255,255,255,0.06) 80%, 
+    rgba(0,0,0,0.6) 100%
+  );
+  border-radius: 4px;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.stacked-pages-left, .stacked-pages-right {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  width: 14px;
+  background: repeating-linear-gradient(
+    to bottom,
+    #ECE4D8 0px,
+    #D8CEBE 1px,
+    #ECE4D8 2px
+  );
+  z-index: -1;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.4);
+}
+.stacked-pages-left {
+  left: -12px;
+  border-radius: 3px 0 0 3px;
+  border-left: 2px solid #BCB09E;
+}
+.stacked-pages-right {
+  right: -12px;
+  border-radius: 0 3px 3px 0;
+  border-right: 2px solid #BCB09E;
+}
+
+/* ==========================================================================
+   PAGES & 3D LEAF SYSTEM
+   ========================================================================== */
+.book-leaf {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: var(--page-width);
+  height: var(--page-height);
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  transition: transform var(--transition-speed) var(--transition-ease);
+  will-change: transform;
+}
+
+.book-leaf.flipped {
+  transform: rotateY(-180deg);
+}
+
+/* Page faces: Front (Right side) and Back (Left side when flipped) */
+.page-face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-sizing: border-box;
+  background-color: var(--paper);
+  color: var(--paper-text);
+  box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.04);
+}
+
+.page-face.page-front {
+  border-radius: 0 8px 8px 0;
+  /* Gutter shadow on inner left edge */
+  background-image: 
+    linear-gradient(to right, rgba(40, 25, 12, 0.28) 0%, rgba(40, 25, 12, 0.08) 5%, rgba(40, 25, 12, 0) 14%),
+    radial-gradient(circle at 100% 50%, rgba(0,0,0,0.03) 0%, transparent 60%);
+}
+
+.page-face.page-back {
+  border-radius: 8px 0 0 8px;
+  transform: rotateY(180deg);
+  /* Gutter shadow on inner right edge */
+  background-image: 
+    linear-gradient(to left, rgba(40, 25, 12, 0.28) 0%, rgba(40, 25, 12, 0.08) 5%, rgba(40, 25, 12, 0) 14%),
+    radial-gradient(circle at 0% 50%, rgba(0,0,0,0.03) 0%, transparent 60%);
+}
+
+/* Page corner turn hint & click zones */
+.flip-hotspot-left, .flip-hotspot-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 70px;
+  z-index: 40;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.flip-hotspot-left {
+  left: 0;
+  background: linear-gradient(to right, rgba(0,0,0,0.06), transparent);
+}
+.flip-hotspot-right {
+  right: 0;
+  background: linear-gradient(to left, rgba(0,0,0,0.06), transparent);
+}
+.book-container:hover .flip-hotspot-left,
+.book-container:hover .flip-hotspot-right {
+  opacity: 1;
+}
+
+.corner-curl-hint {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+  transform: scale(0.85);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.flip-hotspot-left:hover .corner-curl-hint,
+.flip-hotspot-right:hover .corner-curl-hint {
+  transform: scale(1.05);
+  background: var(--accent);
+  color: #111;
+}
+
+/* Page footer & numbering */
+.page-number {
+  position: absolute;
+  bottom: 18px;
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 14px;
+  color: var(--paper-muted);
+  font-style: italic;
+  pointer-events: none;
+  z-index: 10;
+}
+.page-face.page-front .page-number {
+  right: 28px;
+}
+.page-face.page-back .page-number {
+  left: 28px;
+}
+
+.page-header-title {
+  position: absolute;
+  top: 18px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--paper-muted);
+  font-weight: 600;
+  pointer-events: none;
+  z-index: 10;
+}
+.page-face.page-front .page-header-title {
+  right: 28px;
+}
+.page-face.page-back .page-header-title {
+  left: 28px;
+}
+
+/* ==========================================================================
+   BOOK COVERS (FRONT & BACK HARDCOVER)
+   ========================================================================== */
+.cover-front {
+  background: radial-gradient(circle 280px at 75% 20%, #E85D36 0%, #B82848 50%, #1D1432 100%), #140E24 !important;
+  color: #FFFFFF !important;
+  display: flex;
+  flex-direction: column;
+  padding: 44px 38px;
+  position: relative;
+  border-radius: 0 10px 10px 0 !important;
+  border-left: 3px solid rgba(0,0,0,0.5);
+}
+
+.cover-emboss-border {
+  position: absolute;
+  inset: 18px;
+  border: 1px solid rgba(240, 190, 110, 0.45);
+  border-radius: 6px;
+  pointer-events: none;
+}
+.cover-emboss-border::after {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border: 1px solid rgba(240, 190, 110, 0.2);
+  border-radius: 4px;
+}
+
+.cover-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 99px;
+  background: var(--accent);
+  color: #111;
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  width: fit-content;
+  box-shadow: 0 4px 14px rgba(255, 90, 54, 0.4);
+}
+
+.cover-headline {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 800;
+  font-size: 42px;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-top: 18px;
+  color: #FFFFFF;
+}
+
+.cover-sub {
+  font-family: 'Newsreader', Georgia, serif;
+  font-style: italic;
+  font-size: 18px;
+  color: #E8E2F4;
+  margin-top: 12px;
+}
+
+.cover-bottom {
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding-top: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cover-open-btn {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 99px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.cover-open-btn:hover {
+  background: var(--accent);
+  color: #111;
+  border-color: var(--accent);
+  transform: scale(1.04);
+}
+
+.cover-back {
+  background: radial-gradient(circle 280px at 20% 80%, rgba(229,86,123,0.4) 0%, transparent 80%), #161026 !important;
+  color: #FFFFFF !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 44px;
+}
+
+.cover-back-emblem {
+  width: 68px;
+  height: 68px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-gold) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #111;
+  margin-bottom: 20px;
+  box-shadow: 0 6px 20px rgba(255, 90, 54, 0.4);
+}
+
+/* ==========================================================================
+   DYNAMIC IMAGE LAYOUT SYSTEM
+   ========================================================================== */
+.page-content {
+  position: absolute;
+  inset: 44px 32px 42px 32px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Photo Frames & Hover Effects */
+.photo-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #E8E2D8;
+  cursor: pointer;
+  transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1), box-shadow 0.45s ease;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+}
+
+.photo-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.75s cubic-bezier(0.2, 0.9, 0.3, 1.05);
+}
+
+.photo-frame:hover {
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28), 0 0 0 2px var(--accent);
+  z-index: 20;
+}
+
+.photo-frame:hover img {
+  transform: scale(1.05);
+}
+
+/* Photo Caption overlay / tag */
+.photo-tag {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  background: rgba(18, 14, 28, 0.75);
+  color: #FFFFFF;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity 0.25s ease;
+}
+
+/* ----------------------------------------------------
+   LAYOUT 1: SINGLE HERO (MUSEUM PASSE-PARTOUT)
+   ---------------------------------------------------- */
+.layout-single-hero {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.layout-single-hero .photo-frame {
+  flex: 1;
+  width: 100%;
+  max-height: 440px;
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.layout-single-hero .caption-block {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.layout-single-hero .caption-title {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 19px;
+  font-weight: 600;
+  color: #1A1614;
+}
+
+.layout-single-hero .caption-meta {
+  font-size: 12px;
+  color: var(--paper-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+/* ----------------------------------------------------
+   LAYOUT 2: TWO-IMAGE SCRAPBOOK / ROTATED
+   ---------------------------------------------------- */
+.layout-scrapbook {
+  height: 100%;
+  position: relative;
+}
+
+.layout-scrapbook .photo-frame.item-1 {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  width: 72%;
+  height: 52%;
+  transform: rotate(-2.2deg);
+  border: 6px solid #FFFFFF;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+}
+
+.layout-scrapbook .photo-frame.item-2 {
+  position: absolute;
+  bottom: 24px;
+  right: 12px;
+  width: 74%;
+  height: 50%;
+  transform: rotate(2.4deg);
+  border: 6px solid #FFFFFF;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+  z-index: 2;
+}
+
+.layout-scrapbook .photo-frame:hover {
+  transform: rotate(0deg) scale(1.04);
+  z-index: 25;
+}
+
+/* Washi tape styling */
+.washi-tape {
+  position: absolute;
+  top: -12px;
+  left: 32%;
+  width: 70px;
+  height: 22px;
+  background: rgba(235, 218, 185, 0.85);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transform: rotate(-3deg);
+  z-index: 5;
+  border-left: 2px dashed rgba(180, 160, 130, 0.5);
+  border-right: 2px dashed rgba(180, 160, 130, 0.5);
+  pointer-events: none;
+}
+
+/* ----------------------------------------------------
+   LAYOUT 3: TWO-IMAGE ZIGZAG / ASYMMETRICAL
+   ---------------------------------------------------- */
+.layout-zigzag {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.layout-zigzag .item-top {
+  width: 78%;
+  height: 48%;
+  align-self: flex-start;
+}
+
+.layout-zigzag .item-bottom {
+  width: 82%;
+  height: 48%;
+  align-self: flex-end;
+}
+
+.layout-zigzag .story-note {
+  font-family: 'Newsreader', Georgia, serif;
+  font-style: italic;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #5A534B;
+  padding: 4px 6px;
+}
+
+/* ----------------------------------------------------
+   LAYOUT 4: VERTICAL DIPTYCH
+   ---------------------------------------------------- */
+.layout-diptych {
+  height: 100%;
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.layout-diptych .photo-frame {
+  flex: 1;
+  height: 90%;
+  border-radius: 4px;
+}
+
+/* ----------------------------------------------------
+   LAYOUT 5: FULL-SPREAD DOUBLE-PAGE PANORAMA (SPANNING BOTH PAGES!)
+   ---------------------------------------------------- */
+.page-spread-half {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #0E0C16;
+}
+
+/* Left page holds left half of the wide 200% width image */
+.page-spread-left img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 200%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Right page holds right half (shifted -100%) */
+.page-spread-right img {
+  position: absolute;
+  left: -100%;
+  top: 0;
+  width: 200%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Spine crease overlay on spread to create photorealistic center binding depth */
+.spread-spine-crease-left {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 50px;
+  background: linear-gradient(to left, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.12) 50%, transparent 100%);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.spread-spine-crease-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 50px;
+  background: linear-gradient(to right, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.12) 50%, transparent 100%);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.spread-banner-badge {
+  position: absolute;
+  bottom: 30px;
+  padding: 8px 20px;
+  border-radius: 99px;
+  background: rgba(14, 11, 22, 0.75);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  z-index: 10;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+.page-spread-left .spread-banner-badge {
+  right: 30px;
+}
+.page-spread-right .spread-banner-badge {
+  left: 30px;
+}
+
+/* ----------------------------------------------------
+   LAYOUT 6: TRIO COMPOSITION (LEAD + 2 STACKED)
+   ---------------------------------------------------- */
+.layout-trio {
+  height: 100%;
+  display: flex;
+  gap: 14px;
+}
+
+.layout-trio .lead-col {
+  flex: 1.25;
+  height: 100%;
+}
+
+.layout-trio .stack-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  height: 100%;
+}
+
+.layout-trio .stack-col .photo-frame {
+  flex: 1;
+}
+
+/* ----------------------------------------------------
+   LAYOUT 7: VINTAGE POLAROID DUO
+   ---------------------------------------------------- */
+.layout-polaroids {
+  height: 100%;
+  position: relative;
+}
+
+.polaroid-card {
+  position: absolute;
+  background: #FFFFFF;
+  padding: 10px 10px 32px 10px;
+  border-radius: 4px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.polaroid-card .polaroid-img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #eee;
+}
+
+.polaroid-card .polaroid-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.polaroid-caption {
+  font-family: 'Newsreader', Georgia, serif;
+  font-style: italic;
+  font-size: 14px;
+  color: #333;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.polaroid-1 {
+  top: 12px;
+  left: 10px;
+  width: 74%;
+  transform: rotate(-3deg);
+}
+
+.polaroid-2 {
+  bottom: 24px;
+  right: 10px;
+  width: 74%;
+  transform: rotate(2.8deg);
+  z-index: 2;
+}
+
+.polaroid-card:hover {
+  transform: rotate(0deg) scale(1.05);
+  z-index: 30;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.25);
+}
+
+/* ----------------------------------------------------
+   LAYOUT 8: QUAD PHOTO MOSAIC
+   ---------------------------------------------------- */
+.layout-quad {
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ----------------------------------------------------
+   TABLE OF CONTENTS / EDITORIAL ESSAY PAGE
+   ---------------------------------------------------- */
+.page-toc {
+  padding: 44px 38px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.toc-kicker {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.toc-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 800;
+  font-size: 28px;
+  line-height: 1.1;
+  color: #14110F;
+  margin: 8px 0 12px;
+}
+
+.toc-intro {
+  font-family: 'Newsreader', Georgia, serif;
+  font-style: italic;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #4A433B;
+  margin-bottom: 20px;
+}
+
+.toc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toc-item {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px dotted #C7BCAC;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.toc-item:hover {
+  color: var(--accent);
+  transform: translateX(4px);
+}
+
+.toc-num {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  width: 20px;
+}
+
+.toc-label {
+  flex: 1;
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 15px;
+  color: #26221E;
+}
+
+.toc-page {
+  font-size: 13px;
+  color: var(--paper-muted);
+}
+
+/* ==========================================================================
+   NAVIGATION BAR & CONTROLS
+   ========================================================================== */
+.controls-bar {
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 16px 20px 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.spread-indicator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #E3E6F0;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.progress-track {
+  width: 100%;
+  max-width: 380px;
+  height: 5px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.14);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent-gold) 100%);
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+.nav-buttons-cluster {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.nav-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.05);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(8px);
+}
+
+.nav-btn:hover:not(:disabled) {
+  background: var(--accent);
+  color: #111;
+  border-color: var(--accent);
+  transform: scale(1.06);
+  box-shadow: 0 6px 20px rgba(255, 90, 54, 0.35);
+}
+
+.nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Dots navigation */
+.dots-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+}
+
+.nav-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 99px;
+  background: #3B3F50;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: width 0.3s cubic-bezier(0.2, 0.9, 0.3, 1), background 0.3s ease;
+}
+
+.nav-dot.active {
+  width: 32px;
+  background: var(--accent);
+}
+
+/* Quick Action Pills */
+.quick-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pill-action-btn {
+  padding: 8px 16px;
+  border-radius: 99px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: transparent;
+  color: #C8CDDE;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.pill-action-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #FFF;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* ==========================================================================
+   LIGHTBOX MODAL
+   ========================================================================== */
+.lightbox-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 6, 14, 0.92);
+  backdrop-filter: blur(16px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+.lightbox-modal.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.lightbox-content {
+  position: relative;
+  max-width: 1050px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transform: scale(0.95);
+  transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.lightbox-modal.active .lightbox-content {
+  transform: scale(1);
+}
+
+.lightbox-image-wrap {
+  position: relative;
+  width: 100%;
+  max-height: 74vh;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.15);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #000;
+}
+
+.lightbox-image-wrap img {
+  max-width: 100%;
+  max-height: 74vh;
+  object-fit: contain;
+  display: block;
+}
+
+.lightbox-caption-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.lightbox-info h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #FFF;
+}
+
+.lightbox-info p {
+  font-size: 13px;
+  color: #A3A8BA;
+  margin-top: 2px;
+}
+
+.lightbox-close-btn {
+  position: absolute;
+  top: -46px;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.lightbox-close-btn:hover {
+  background: var(--accent);
+  color: #111;
+  transform: scale(1.1);
+}
+
+/* ==========================================================================
+   DRAWER / FILMSTRIP MODAL
+   ========================================================================== */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  z-index: 500;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+.drawer-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.spreads-drawer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #151322;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 24px 28px 32px;
+  z-index: 550;
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1);
+  box-shadow: 0 -15px 40px rgba(0, 0, 0, 0.6);
+}
+.spreads-drawer.active {
+  transform: translateY(0);
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.drawer-title {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #FFF;
+}
+
+.drawer-grid {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.drawer-card {
+  flex: 0 0 160px;
+  background: #201D30;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.25s ease;
+}
+
+.drawer-card:hover, .drawer-card.active {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+  background: #2C2842;
+}
+
+.drawer-card-preview {
+  width: 100%;
+  height: 90px;
+  border-radius: 4px;
+  background: #111;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.drawer-card-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.drawer-card-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #FFF;
+}
+
+.drawer-card-sub {
+  font-size: 11px;
+  color: #8C92A4;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN (TABLETS & MOBILE)
+   ========================================================================== */
+@media (max-width: 1024px) {
+  :root {
+    --book-width: 760px;
+    --book-height: 510px;
+    --page-width: 380px;
+    --page-height: 510px;
+  }
+  .main-title {
+    font-size: 28px;
+  }
+  .cover-headline {
+    font-size: 32px;
+  }
+  .page-content {
+    inset: 32px 24px 34px 24px;
+  }
+}
+
+@media (max-width: 800px) {
+  :root {
+    --book-width: 620px;
+    --book-height: 420px;
+    --page-width: 310px;
+    --page-height: 420px;
+  }
+  .cover-headline {
+    font-size: 26px;
+  }
+  .toc-title {
+    font-size: 22px;
+  }
+  .toc-list {
+    gap: 6px;
+  }
+  .toc-item {
+    font-size: 13px;
+  }
+  .nav-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  /* On compact mobile devices, auto scale the book to fit the viewport width */
+  .book-stage {
+    padding: 10px 4px 16px;
+    perspective: 1600px;
+  }
+  .book-container {
+    transform: scale(0.56);
+    transform-origin: center top;
+    margin-bottom: -170px;
+  }
+  .main-title {
+    font-size: 22px;
+  }
+  .intro-desc {
+    font-size: 14px;
+  }
+  .header-btn span {
+    display: none;
+  }
+}

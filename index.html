@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lumen • Interactive Art & Photobook Gallery</title>
+  <meta name="description" content="A realistic 3D interactive photobook gallery with dynamic page layouts, double-page panoramas, scrapbook compositions, and authentic page-turning physics.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ============================================================
+       HEADER NAVIGATION
+       ============================================================ -->
+  <header>
+    <a href="#" class="brand" id="brandLogo">
+      <div class="brand-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path>
+        </svg>
+      </div>
+      <div>
+        <span class="brand-title">Lumen</span>
+        <span class="brand-subtitle">Photobook Edition</span>
+      </div>
+    </a>
+
+    <div class="header-actions">
+      <button class="header-btn" id="toggleDrawerBtn" title="View all spreads in a visual filmstrip">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+        <span>All Spreads</span>
+      </button>
+
+      <button class="header-btn active" id="soundToggleBtn" title="Toggle page flip sound effect">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+        <span class="sound-label">Audio On</span>
+      </button>
+
+      <button class="header-btn" id="autoplayBtn" title="Auto-advance slideshow">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+        <span>Auto Play</span>
+      </button>
+
+      <button class="header-btn" id="fullscreenBtn" title="Toggle Fullscreen">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 3 21 3 21 9"></polyline>
+          <polyline points="9 21 3 21 3 15"></polyline>
+          <line x1="21" y1="3" x2="14" y2="10"></line>
+          <line x1="3" y1="21" x2="10" y2="14"></line>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       INTRO TITLE SECTION
+       ============================================================ -->
+  <section class="gallery-intro">
+    <div class="tag-badge">
+      <span class="dot"></span>
+      <span>Interactive Photobook • Volume IV</span>
+    </div>
+    <h1 class="main-title">Fifty Frames from a Single Season</h1>
+    <p class="intro-desc">
+      A tactile digital book exploring light, solitude, and vast horizons. Click the book margins, drag or use arrow keys to turn the pages.
+    </p>
+  </section>
+
+  <!-- ============================================================
+       3D REALISTIC BOOK STAGE
+       ============================================================ -->
+  <main class="book-stage">
+    <div class="book-container" id="bookContainer">
+      
+      <!-- Hardcover Back Plate & Ambient Drop Shadows -->
+      <div class="book-shadow"></div>
+      <div class="book-cover-base"></div>
+      <div class="stacked-pages-left"></div>
+      <div class="stacked-pages-right"></div>
+      <div class="spine-ridge"></div>
+
+      <!-- Left & Right Page Turning Hotspots -->
+      <div class="flip-hotspot-left" id="flipHotspotLeft" title="Click to flip backward">
+        <div class="corner-curl-hint">❮</div>
+      </div>
+      <div class="flip-hotspot-right" id="flipHotspotRight" title="Click to flip forward">
+        <div class="corner-curl-hint">❯</div>
+      </div>
+
+      <!-- ========================================================
+           LEAF 0: FRONT COVER (OUTER) + TABLE OF CONTENTS (INNER)
+           ======================================================== -->
+      <div class="book-leaf" id="leaf0">
+        <!-- Front: Hardcover -->
+        <div class="page-face page-front cover-front">
+          <div class="cover-emboss-border"></div>
+          <div class="cover-badge">Lumen Journal • Vol. IV</div>
+          <h2 class="cover-headline">Fifty Frames from a Single Season</h2>
+          <p class="cover-sub">Archival photography across six weeks of alpine light, quiet coastlines, and morning fog.</p>
+          
+          <div style="margin-top: 36px; display: flex; align-items: center; gap: 14px;">
+            <div style="width: 48px; height: 1px; background: rgba(240, 190, 110, 0.7);"></div>
+            <span style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: #E8B975;">Curated Edition</span>
+          </div>
+
+          <div class="cover-bottom">
+            <span style="font-size: 13px; color: #D5CEE5;">Lumen Editions • 2026</span>
+            <button class="cover-open-btn">Open Book ➔</button>
+          </div>
+        </div>
+
+        <!-- Back: Table of Contents & Curatorial Essay -->
+        <div class="page-face page-back">
+          <div class="page-header-title">Prologue</div>
+          <div class="page-toc">
+            <span class="toc-kicker">Curatorial Index</span>
+            <h3 class="toc-title">A Season in Fifty Frames</h3>
+            <p class="toc-intro">
+              Captured across early autumn in the high Alps, remote Pacific coves, and quiet misty sanctuaries.
+            </p>
+            <div class="toc-list">
+              <div class="toc-item" data-spread="1">
+                <span class="toc-num">01</span>
+                <span class="toc-label">The Solitary Light</span>
+                <span class="toc-page">Page 1</span>
+              </div>
+              <div class="toc-item" data-spread="2">
+                <span class="toc-num">02</span>
+                <span class="toc-label">Scrapbook & Zigzag Studies</span>
+                <span class="toc-page">Pages 2–3</span>
+              </div>
+              <div class="toc-item" data-spread="3">
+                <span class="toc-num">03</span>
+                <span class="toc-label">Double-Page Alpine Panorama</span>
+                <span class="toc-page">Pages 4–5</span>
+              </div>
+              <div class="toc-item" data-spread="4">
+                <span class="toc-num">04</span>
+                <span class="toc-label">Architectural Diptych</span>
+                <span class="toc-page">Pages 6–7</span>
+              </div>
+              <div class="toc-item" data-spread="5">
+                <span class="toc-num">05</span>
+                <span class="toc-label">Editorial Trio & Vintage Polaroids</span>
+                <span class="toc-page">Pages 8–9</span>
+              </div>
+              <div class="toc-item" data-spread="6">
+                <span class="toc-num">06</span>
+                <span class="toc-label">Double-Page Coastal Panorama</span>
+                <span class="toc-page">Pages 10–11</span>
+              </div>
+              <div class="toc-item" data-spread="7">
+                <span class="toc-num">07</span>
+                <span class="toc-label">Asymmetric Offset & Chapter Finale</span>
+                <span class="toc-page">Pages 12–13</span>
+              </div>
+            </div>
+          </div>
+          <div class="page-number">ii</div>
+        </div>
+      </div>
+
+      <!-- ========================================================
+           LEAF 1: SPREAD 1 (PAGE 1) & SPREAD 2 (PAGE 2)
+           ======================================================== -->
+      <div class="book-leaf" id="leaf1">
+        <!-- Front: Page 1 - Single Hero Minimalist Passe-Partout -->
+        <div class="page-face page-front">
+          <div class="page-header-title">Chapter I • Light</div>
+          <div class="page-content">
+            <div class="layout-single-hero">
+              <div class="photo-frame" data-title="The Solitary Light • Cape Mendocino" data-desc="35mm Film • Leica M6 • Early morning sea mist along the rugged northern headland.">
+                <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80" 
+                     onerror="this.src='https://picsum.photos/seed/1001/1200/900'" 
+                     alt="The Solitary Light" loading="lazy">
+                <div class="photo-tag">Plate 01</div>
+              </div>
+              <div class="caption-block">
+                <h4 class="caption-title">I. The Solitary Light</h4>
+                <p class="caption-meta">Cape Mendocino • 06:14 AM • Fog & Breakers</p>
+              </div>
+            </div>
+          </div>
+          <div class="page-number">1</div>
+        </div>
+
+        <!-- Back: Page 2 - Two-Image Scrapbook / Rotated with Washi Tape -->
+        <div class="page-face page-back">
+          <div class="page-header-title">Scrapbook Notes</div>
+          <div class="page-content">
+            <div class="layout-scrapbook">
+              <!-- Item 1 with Washi Tape -->
+              <div class="photo-frame item-1" data-title="Misty Canopy • Redwood Basin" data-desc="Natural angle -2.2deg scrapbook tilt • 50mm f/2.0 • Sunlight slicing through morning vapor.">
+                <div class="washi-tape"></div>
+                <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1000&q=80" 
+                     onerror="this.src='https://picsum.photos/seed/2001/1000/800'" 
+                     alt="Misty Canopy" loading="lazy">
+                <div class="photo-tag">Redwood Basin</div>
+              </div>
+              <!-- Item 2 Overlapping with subtle tilt -->
+              <div class="photo-frame item-2" data-title="High Meadow Morning" data-desc="Tilted +2.4deg • Wild flora caught in the first amber rays before the valley heat rises.">
+                <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1000&q=80" 
+                     onerror="this.src='https://picsum.photos/seed/2002/1000/800'" 
+                     alt="High Meadow Morning" loading="lazy">
+                <div class="photo-tag">Plate 02-B</div>
+              </div>
+            </div>
+          </div>
+          <div class="page-number">2</div>
+        </div>
+      </div>
+
+      <!-- ========================================================
+           LEAF 2: SPREAD 2 (PAGE 3) & SPREAD 3 (PAGE 4: FULL SPREAD LEFT)
+           ======================================================== -->
+      <div class="book-leaf" id="leaf2">
+        <!-- Front: Page 3 - Two-Image Zigzag / Asymmetrical Staggered -->
+        <div class="page-face page-front">
+          <div class="page-header-title">Field Journal</div>
+          <div class="page-content">
+            <div class="layout-zigzag">
+              <div class="photo-frame item-top" data-title="Emerald Glade" data-desc="Asymmetrical zigzag composition • 28mm • The path less traveled into the deep valley.">
+                <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1000&q=80" 
+                     onerror="this.src='https://picsum.photos/seed/3001/1000/800'" 
+                     alt="Emerald Glade" loading="lazy">
+                <div class="photo-tag">Glade Study</div>
+              </div>
+              <div class="story-note">
+                “There is an unrepeatable geometry in the way fog meets mountain stone. You cannot plan it; you simply wait until the wind holds its breath.”
+              </div>
+              <div class="photo-frame item-bottom" data-title="Golden Pass At Sunset" data-desc="Asymmetric bottom anchor • Captured at the crest of the pass as shadows lengthen.">
+                <img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1000&q=80" 
+                     onerror="this.src='https://picsum.photos/seed/3002/1000/800'" 
+                     alt="Golden Pass" loading="lazy">
+                <div class="photo-tag">Golden Pass</div>
+              </div>
+            </div>
+          </div>
+          <div class="page-number">3</div>
+        </div>
+
+        <!-- Back: Page 4 - DOUBLE-PAGE PANORAMIC SPREAD I (LEFT HALF) -->
+        <div class="page-face page-back">
+          <div class="page-spread-half page-spread-left" data-title="The Alpine Ridge at Dawn (Double-Page Spread)" data-desc="Continuous panorama spanning pages 4 & 5 seamlessly across the central binding. Dolomites, Italy.">
+            <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2400&q=85" 
+                 onerror="this.src='https://picsum.photos/seed/banner-wide-01/1920/1320'" 
+                 alt="The Alpine Ridge at Dawn" loading="lazy">
+            <div class="spread-spine-crease-left"></div>
+            <div class="spread-banner-badge">Panoramic Spread • Left</div>
+          </div>
+          <div class="page-number" style="color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.8);">4</div>
+        </div>
+      </div>
+
+      <!-- ========================================================
+           LEAF 3: SPREAD 3 (PAGE 5: FULL SPREAD RIGHT) & SPREAD 4 (PAGE 6)
+           ======================================================== -->
+      <div class="book-leaf" id="leaf3">
+        <!-- Front: Page 5 - DOUBLE-PAGE PANORAMIC SPREAD I (RIGHT HALF) -->
+        <div class="page-face page-front">
+          <div class="page-spread-half page-spread-right" data-title="The Alpine Ridge at Dawn (Double-Page Spread)" data-desc="Right half of the panoramic double-page spread. Seamlessly aligned to the center crease.">
+            <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2400&q=85" 
+                 onerror="this.src='https://picsum.photos/seed/banner-wide-01/1920/1320'" 
+                 alt="The Alpine Ridge at Dawn" loading="lazy">
+            <div class="spread-spine-crease-right"></div>
+            <div class="spread-banner-badge">Pages 4 &amp; 5 • Alpine Panorama</div>
+          </div>
+          <div class="page-number" style="color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.8);">5</div>
+        </div>
+
+        <!-- Back: Page 6 - Diptych Vertical Light Studies -->
+        <div class="page-face page-back">
+          <div class="page-header-title">Diptych Studies</div>
+          <div class="page-content">
+            <div class="layout-diptych">
+              <div class="photo-frame" data-title="Light Study I • Stone Archway" data-desc="Diptych Left • Architectural geometry and quiet shadows in cloister corridors.">
+                <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80" 
+                     onerror="this.src='https://picsum.photos/seed/6001/800/1000'" 
+                     alt="Stone Archway" loading="lazy">
+                <div class="photo-tag">Archway I</div>
+              </div>
+              <div class="photo-frame" data-title="Light Study II • Interior Shadows" data-desc="Diptych Right • Contrast study of natural raking sunlight.">
+                <img src="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=800&q=80" 
+                     onerror="this.src='https://picsum.photos/seed/6002/800/1000'" 
+                     alt="Interior Shadows" loading="lazy">
+                <div class="photo-tag">Archway II</div>
+              </div>
+            </div>
+          </div>
+          <div class="page-number">6</div>
+        </div>
+      </div>
+
+      <!-- ========================================================
+           LEAF 4: SPREAD 4 (PAGE 7) & SPREAD 5 (PAGE 8: TRIO)
+           ======================================================== -->
+      <div class="book-leaf" id="leaf4">
+        <!-- Front: Page 7 - Cinematic Landscape with Narrative -->
+        <div class="page-face page-front">
+          <div class="page-header-title">Chapter II • Water &amp; Mist</div>
+          <div class="page-content">
+            <div class="layout-single-hero">
+              <div class="photo-frame" data-title="The Coastal Basin • Pacific Wilds" data-desc="Editorial plate • Hasselblad 500C/M • 80mm f/2.8 • Long exposure breakers colliding with obsidian basalt.">
+                <img src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=1200&q=80" 
+                     onerror="this.src='https://picsum.photos/seed/7001/1200/900'" 
+                     alt="The Coastal Basin" loading="lazy">
+                <div class="photo-tag">Plate 07</div>
+              </div>
+              <div class="caption-block">
+                <h4 class="caption-title">The Cascading Waters of Neah</h4>
+                <p class="caption-meta">Hasselblad 500C/M • 80mm • Portra 400 • Olympic Coast</p>
+              </div>
+            </div>
+          </div>
+          <div class="page-number">7</div>
+        </div>
+
+        <!-- Back: Page 8 - Trio Feature (1 Lead + 2 Stacked) -->
+        <div class="page-face page-back">
+          <div class="page-header-title">Editorial Trio</div>
+          <div class="page-content">
+            <div class="layout-trio">
+              <!-- Lead Column -->
+              <div class="lead-col">
+                <div class="photo-frame" style="height: 100%;" data-title="The Great Ridge" data-desc="Trio Lead Image • Dominant vertical framing of the serrated granite towers.">
+                  <img src="https://images.unsplash.com/photo-1426604966848-d7adac402bff?auto=format&fit=crop&w=1000&q=80" 
+                       onerror="this.src='https://picsum.photos/seed/8001/900/1200'" 
+                       alt="The Great Ridge" loading="lazy">
+                  <div class="photo-tag">Lead • Granite Ridge</div>
+                </div>
+              </div>
+              <!-- Stack Column -->
+              <div class="stack-col">
+                <div class="photo-frame" data-title="Alpine Tarn Reflection" data-desc="Trio Companion A • Still glacial water mirror.">
+                  <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=800&q=80" 
+                       onerror="this.src='https://picsum.photos/seed/8002/800/600'" 
+                       alt="Alpine Tarn" loading="lazy">
+                  <div class="photo-tag">Detail A</div>
+                </div>
+                <div class="photo-frame" data-title="Valley Floor Mist" data-desc="Trio Companion B • Rising dawn humidity.">
+                  <img src="https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=800&q=80" 
+                       onerror="this.src='https://picsum.photos/seed/8003/800/600'" 
+                       alt="Valley Mist" loading="lazy">
+                  <div class="photo-tag">Detail B</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="page-number">8</div>
+        </div>
+      </div>
+
+      <!-- ========================================================
+           LEAF 5: SPREAD 5 (PAGE 9: POLAROIDS) & SPREAD 6 (PAGE 10: SPREAD II LEFT)
+           ======================================================== -->
+      <div class="book-leaf" id="leaf5">
+        <!-- Front: Page 9 - Vintage Polaroid Duo -->
+        <div class="page-face page-front">
+          <div class="page-header-title">Instant Impressions</div>
+          <div class="page-content">
+            <div class="layout-polaroids">
+              <div class="polaroid-card polaroid-1" data-title="Misty Pass • Hokkaido" data-desc="Polaroid SX-70 Original • Authentic white border and handwritten diary annotation.">
+                <div class="polaroid-img">
+                  <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80" 
+                       onerror="this.src='https://picsum.photos/seed/9001/800/800'" 
+                       alt="Misty Pass" loading="lazy">
+                </div>
+                <div class="polaroid-caption">Hokkaido Pass • 06:45 AM</div>
+              </div>
+
+              <div class="polaroid-card polaroid-2" data-title="Pacific Foam • Big Sur" data-desc="Polaroid SX-70 Original • Coastal spray on warm sand.">
+                <div class="polaroid-img">
+                  <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80" 
+                       onerror="this.src='https://picsum.photos/seed/9002/800/800'" 
+                       alt="Pacific Foam" loading="lazy">
+                </div>
+                <div class="polaroid-caption">Big Sur breakers • Oct 14</div>
+              </div>
+            </div>
+          </div>
+          <div class="page-number">9</div>
+        </div>
+
+        <!-- Back: Page 10 - DOUBLE-PAGE PANORAMIC SPREAD II (LEFT HALF) -->
+        <div class="page-face page-back">
+          <div class="page-spread-half page-spread-left" data-title="The Azure Coastline at Sunset (Double-Page Spread II)" data-desc="Second full-bleed panoramic double-page spread. The horizon stretches uninterrupted across both pages.">
+            <img src="https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=2400&q=85" 
+                 onerror="this.src='https://picsum.photos/seed/cover-spread-02/1600/2200'" 
+                 alt="Azure Coast Sunset" loading="lazy">
+            <div class="spread-spine-crease-left"></div>
+            <div class="spread-banner-badge">Panoramic Spread II • Left</div>
+          </div>
+          <div class="page-number" style="color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.8);">10</div>
+        </div>
+      </div>
+
+      <!-- ========================================================
+           LEAF 6: SPREAD 6 (PAGE 11: SPREAD II RIGHT) & SPREAD 7 (PAGE 12)
+           ======================================================== -->
+      <div class="book-leaf" id="leaf6">
+        <!-- Front: Page 11 - DOUBLE-PAGE PANORAMIC SPREAD II (RIGHT HALF) -->
+        <div class="page-face page-front">
+          <div class="page-spread-half page-spread-right" data-title="The Azure Coastline at Sunset (Double-Page Spread II)" data-desc="Right half of double-page panoramic spread II. Seamlessly matched across the spine crease.">
+            <img src="https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=2400&q=85" 
+                 onerror="this.src='https://picsum.photos/seed/cover-spread-02/1600/2200'" 
+                 alt="Azure Coast Sunset" loading="lazy">
+            <div class="spread-spine-crease-right"></div>
+            <div class="spread-banner-badge">Pages 10 &amp; 11 • Azure Sunset</div>
+          </div>
+          <div class="page-number" style="color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.8);">11</div>
+        </div>
+
+        <!-- Back: Page 12 - Creative Asymmetrical 2-Image Offset -->
+        <div class="page-face page-back">
+          <div class="page-header-title">Asymmetric Framing</div>
+          <div class="page-content">
+            <div style="position: relative; height: 100%;">
+              <!-- Floating Top Detail -->
+              <div class="photo-frame" style="position: absolute; top: 0; right: 0; width: 62%; height: 42%;" 
+                   data-title="Golden Sand Ripple" data-desc="Macro study of wind-carved mineral contours at low tide.">
+                <img src="https://images.unsplash.com/photo-1470240731273-7821a6eeb6bd?auto=format&fit=crop&w=1000&q=80" 
+                     onerror="this.src='https://picsum.photos/seed/1201/800/600'" 
+                     alt="Sand Ripple" loading="lazy">
+                <div class="photo-tag">Detail • Texture</div>
+              </div>
+              
+              <!-- Subtle Editorial Story Excerpt -->
+              <div style="position: absolute; top: 46%; left: 0; width: 44%; font-family: 'Newsreader', serif; font-style: italic; font-size: 14px; line-height: 1.45; color: #5A534B;">
+                “The tide retreats twice a day, leaving behind a transient canvas etched with the wind’s quietest brushwork.”
+              </div>
+
+              <!-- Anchored Bottom Hero -->
+              <div class="photo-frame" style="position: absolute; bottom: 0; left: 0; width: 88%; height: 48%;" 
+                   data-title="The Low Tide Mirror" data-desc="Reflective water sheet catching amber cloud underbellies.">
+                <img src="https://images.unsplash.com/photo-1475921088700-415f5e297f34?auto=format&fit=crop&w=1000&q=80" 
+                     onerror="this.src='https://picsum.photos/seed/1202/1000/600'" 
+                     alt="Low Tide Mirror" loading="lazy">
+                <div class="photo-tag">Plate 12</div>
+              </div>
+            </div>
+          </div>
+          <div class="page-number">12</div>
+        </div>
+      </div>
+
+      <!-- ========================================================
+           LEAF 7: SPREAD 7 (PAGE 13) & SPREAD 8 (PAGE 14: QUAD MOSAIC)
+           ======================================================== -->
+      <div class="book-leaf" id="leaf7">
+        <!-- Front: Page 13 - Full-Bleed Atmospheric Chapter Cover -->
+        <div class="page-face page-front" style="background: #0B0813;">
+          <div class="photo-frame" style="position: absolute; inset: 0; border-radius: 0;" data-title="Chapter III • The Blue Hour" data-desc="Atmospheric full-bleed cover plate • Night sky over the jagged alpine rim.">
+            <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1200&q=80" 
+                 onerror="this.src='https://picsum.photos/seed/cover-spread-03/1600/2200'" 
+                 alt="The Blue Hour" loading="lazy">
+            <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(10,8,18,0.85) 0%, transparent 60%); pointer-events: none;"></div>
+            <div style="position: absolute; left: 36px; bottom: 44px; z-index: 5;">
+              <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); font-weight: 700;">Chapter Three</span>
+              <h3 style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 32px; font-weight: 800; color: #FFF; line-height: 1.1; margin-top: 6px;">The Blue Hour &amp; Beyond</h3>
+              <p style="font-family: 'Newsreader', serif; font-style: italic; color: #D8D2E4; font-size: 15px; margin-top: 6px;">When the sun dips and the mountains turn to silhouette.</p>
+            </div>
+          </div>
+          <div class="page-number" style="color: #fff;">13</div>
+        </div>
+
+        <!-- Back: Page 14 - Quad Photo Mosaic Grid -->
+        <div class="page-face page-back">
+          <div class="page-header-title">Mosaic Studies</div>
+          <div class="page-content">
+            <div class="layout-quad">
+              <div class="photo-frame" data-title="Autumn Foliage Canopy" data-desc="Mosaic Frame 1 • Amber birch leaves against granite.">
+                <img src="https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&w=800&q=80" 
+                     onerror="this.src='https://picsum.photos/seed/1401/800/800'" 
+                     alt="Autumn Foliage" loading="lazy">
+                <div class="photo-tag">I. Canopy</div>
+              </div>
+              <div class="photo-frame" data-title="Mountain Tarn at Twilight" data-desc="Mosaic Frame 2 • Still water reflections.">
+                <img src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=800&q=80" 
+                     onerror="this.src='https://picsum.photos/seed/1402/800/800'" 
+                     alt="Mountain Tarn" loading="lazy">
+                <div class="photo-tag">II. Twilight</div>
+              </div>
+              <div class="photo-frame" data-title="Alpine Flora Macro" data-desc="Mosaic Frame 3 • Dew drops on high-altitude moss.">
+                <img src="https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?auto=format&fit=crop&w=800&q=80" 
+                     onerror="this.src='https://picsum.photos/seed/1403/800/800'" 
+                     alt="Alpine Flora" loading="lazy">
+                <div class="photo-tag">III. Flora</div>
+              </div>
+              <div class="photo-frame" data-title="Forest Pathway in Mist" data-desc="Mosaic Frame 4 • Silent cedar forest in heavy rain.">
+                <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=800&q=80" 
+                     onerror="this.src='https://picsum.photos/seed/1404/800/800'" 
+                     alt="Forest Pathway" loading="lazy">
+                <div class="photo-tag">IV. Path</div>
+              </div>
+            </div>
+          </div>
+          <div class="page-number">14</div>
+        </div>
+      </div>
+
+      <!-- ========================================================
+           LEAF 8: SPREAD 8 (PAGE 15: FINALE) & BACK COVER
+           ======================================================== -->
+      <div class="book-leaf" id="leaf8">
+        <!-- Front: Page 15 - Finale Silhouette (Single Hero with Gold Border) -->
+        <div class="page-face page-front">
+          <div class="page-header-title">Epilogue</div>
+          <div class="page-content">
+            <div class="layout-single-hero">
+              <div class="photo-frame" style="border: 2px solid rgba(226, 167, 85, 0.45); max-height: 420px;" 
+                   data-title="The Solitary Tree at Dusk" data-desc="Finale plate • 85mm f/1.4 • The final light fades across the southern hills.">
+                <img src="https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=1200&q=80" 
+                     onerror="this.src='https://picsum.photos/seed/1501/1200/900'" 
+                     alt="Solitary Tree at Dusk" loading="lazy">
+                <div class="photo-tag">Plate 15 • Finale</div>
+              </div>
+              <div class="caption-block">
+                <h4 class="caption-title">The Solitary Watchman</h4>
+                <p class="caption-meta">Southern Ridge • 19:42 PM • Last Light</p>
+                <p style="font-family: 'Newsreader', serif; font-style: italic; color: #5A534B; font-size: 14px; margin-top: 10px;">
+                  “Every season leaves its signature in the soil, in the stone, and in the memory of the light.”
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="page-number">15</div>
+        </div>
+
+        <!-- Back: Hardcover Back -->
+        <div class="page-face page-back cover-back">
+          <div class="cover-emboss-border"></div>
+          <div class="cover-back-emblem">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path>
+            </svg>
+          </div>
+          <h2 style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 32px; font-weight: 800; color: #FFF;">End of Volume IV</h2>
+          <p style="font-size: 15px; color: #C9C2DB; max-width: 320px; line-height: 1.5; margin-top: 10px;">
+            Thank you for exploring this edition. Volume V will be published in the coming season.
+          </p>
+
+          <div style="margin-top: 36px; padding: 10px 18px; border: 1px dashed rgba(255,255,255,0.25); border-radius: 8px;">
+            <span style="font-family: monospace; font-size: 12px; letter-spacing: 0.2em; color: #AAA;">ISBN 978-0-2026-LUMEN-4</span>
+          </div>
+
+          <button class="pill-action-btn" id="restartBtn" style="margin-top: 24px; color: #fff; border-color: rgba(255,255,255,0.3);">
+            ↺ Return to Front Cover
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ============================================================
+       NAVIGATION BAR & SPREAD CONTROLS
+       ============================================================ -->
+  <nav class="controls-bar" aria-label="Book page navigation">
+    <div class="spread-indicator" id="spreadIndicator">
+      Hardcover • Lumen Journal
+    </div>
+
+    <!-- Progress Track -->
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <!-- Controls Cluster -->
+    <div class="nav-buttons-cluster">
+      <button class="nav-btn" id="prevBtn" aria-label="Turn page backward (Left Arrow)" title="Turn backward">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+
+      <!-- Dots Indicators for Spreads 0 to 9 -->
+      <div class="dots-container" id="dotsContainer">
+        <button class="nav-dot active" aria-label="Go to Cover"></button>
+        <button class="nav-dot" aria-label="Go to Spread 1"></button>
+        <button class="nav-dot" aria-label="Go to Spread 2"></button>
+        <button class="nav-dot" aria-label="Go to Spread 3"></button>
+        <button class="nav-dot" aria-label="Go to Spread 4"></button>
+        <button class="nav-dot" aria-label="Go to Spread 5"></button>
+        <button class="nav-dot" aria-label="Go to Spread 6"></button>
+        <button class="nav-dot" aria-label="Go to Spread 7"></button>
+        <button class="nav-dot" aria-label="Go to Spread 8"></button>
+        <button class="nav-dot" aria-label="Go to Back Cover"></button>
+      </div>
+
+      <button class="nav-btn" id="nextBtn" aria-label="Turn page forward (Right Arrow)" title="Turn forward">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Extra Helpful Action Pills -->
+    <div class="quick-actions">
+      <span style="font-size: 12px; color: #8A8F9E;">💡 Tips: Use <strong>Left / Right Arrow keys</strong>, click the outer page margins, or click any photo to zoom in!</span>
+    </div>
+  </nav>
+
+  <!-- ============================================================
+       LIGHTBOX ZOOM MODAL
+       ============================================================ -->
+  <div class="lightbox-modal" id="lightboxModal" role="dialog" aria-modal="true" aria-label="Image zoom preview">
+    <div class="lightbox-content">
+      <button class="lightbox-close-btn" id="lightboxClose" aria-label="Close zoom modal">✕</button>
+      <div class="lightbox-image-wrap">
+        <img id="lightboxImg" src="" alt="High resolution photo preview">
+      </div>
+      <div class="lightbox-caption-bar">
+        <div class="lightbox-info">
+          <h3 id="lightboxTitle">Plate Title</h3>
+          <p id="lightboxDesc">Curated photographic study from the Lumen editorial collection.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SPREADS FILMSTRIP DRAWER MODAL
+       ============================================================ -->
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  <aside class="spreads-drawer" id="spreadsDrawer" aria-label="Spreads filmstrip navigator">
+    <div class="drawer-header">
+      <span class="drawer-title">Browse All Spreads (Filmstrip)</span>
+      <button class="pill-action-btn" id="closeDrawerBtn">✕ Close</button>
+    </div>
+    <div class="drawer-grid">
+      <div class="drawer-card active" data-spread="0">
+        <div class="drawer-card-preview">
+          <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300&q=70" alt="Cover">
+        </div>
+        <div class="drawer-card-title">Cover</div>
+        <div class="drawer-card-sub">Lumen Journal</div>
+      </div>
+      <div class="drawer-card" data-spread="1">
+        <div class="drawer-card-preview">
+          <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300&q=70" alt="Spread 1">
+        </div>
+        <div class="drawer-card-title">Spread 1</div>
+        <div class="drawer-card-sub">Single Hero</div>
+      </div>
+      <div class="drawer-card" data-spread="2">
+        <div class="drawer-card-preview">
+          <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=300&q=70" alt="Spread 2">
+        </div>
+        <div class="drawer-card-title">Spread 2</div>
+        <div class="drawer-card-sub">Scrapbook &amp; Zigzag</div>
+      </div>
+      <div class="drawer-card" data-spread="3">
+        <div class="drawer-card-preview">
+          <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=300&q=70" alt="Spread 3">
+        </div>
+        <div class="drawer-card-title">Spread 3</div>
+        <div class="drawer-card-sub">Double Panorama I</div>
+      </div>
+      <div class="drawer-card" data-spread="4">
+        <div class="drawer-card-preview">
+          <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=300&q=70" alt="Spread 4">
+        </div>
+        <div class="drawer-card-title">Spread 4</div>
+        <div class="drawer-card-sub">Diptych Studies</div>
+      </div>
+      <div class="drawer-card" data-spread="5">
+        <div class="drawer-card-preview">
+          <img src="https://images.unsplash.com/photo-1426604966848-d7adac402bff?auto=format&fit=crop&w=300&q=70" alt="Spread 5">
+        </div>
+        <div class="drawer-card-title">Spread 5</div>
+        <div class="drawer-card-sub">Trio &amp; Polaroids</div>
+      </div>
+      <div class="drawer-card" data-spread="6">
+        <div class="drawer-card-preview">
+          <img src="https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=300&q=70" alt="Spread 6">
+        </div>
+        <div class="drawer-card-title">Spread 6</div>
+        <div class="drawer-card-sub">Double Panorama II</div>
+      </div>
+      <div class="drawer-card" data-spread="7">
+        <div class="drawer-card-preview">
+          <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=300&q=70" alt="Spread 7">
+        </div>
+        <div class="drawer-card-title">Spread 7</div>
+        <div class="drawer-card-sub">Asymmetric &amp; Chapter</div>
+      </div>
+      <div class="drawer-card" data-spread="8">
+        <div class="drawer-card-preview">
+          <img src="https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=300&q=70" alt="Spread 8">
+        </div>
+        <div class="drawer-card-title">Spread 8</div>
+        <div class="drawer-card-sub">Mosaic &amp; Finale</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Script -->
+  <script src="book.js"></script>
+</body>
+</html>
