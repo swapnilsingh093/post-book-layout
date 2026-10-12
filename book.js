@@ -8,14 +8,14 @@
 // ==========================================================================
 const SPREAD_NAMES = [
   "Hardcover • Lumen Journal",
-  "Spread 1 • Contents & Single Hero",
-  "Spread 2 • Scrapbook & Asymmetric Zigzag",
-  "Spread 3 • Double-Page Panoramic Spread I",
-  "Spread 4 • Diptych & Cinematic Landscape",
-  "Spread 5 • Editorial Trio & Vintage Polaroids",
-  "Spread 6 • Double-Page Panoramic Spread II",
-  "Spread 7 • Asymmetric Offset & Chapter Cover",
-  "Spread 8 • Quad Mosaic & Finale Silhouette",
+  "Spread 1 • Table of Contents & Hero Plate",
+  "Spread 2 • Vertical & Horizontal Zigzag",
+  "Spread 3 • Alpine Double-Page Panorama",
+  "Spread 4 • Fine-Art Solo & Staggered Duo",
+  "Spread 5 • Asymmetric Horizon & Coastal Zigzag",
+  "Spread 6 • Azure Coast Double-Page Panorama",
+  "Spread 7 • Staggered Tides & Night Rim Hero",
+  "Spread 8 • Inverted Asymmetric Duo & Finale",
   "Back Cover • Lumen Editions"
 ];
 

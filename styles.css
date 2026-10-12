@@ -597,7 +597,263 @@ header {
 }
 
 /* ----------------------------------------------------
-   LAYOUT 2: DUAL EQUAL (100% FULL WIDTH, 50/50 FULL HEIGHT)
+   LAYOUT 1B: SINGLE HERO INSET (FINE-ART CENTERED WITH WHITE MARGIN)
+   ---------------------------------------------------- */
+.layout-single-inset {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.layout-single-inset .photo-frame {
+  width: 88% !important;
+  height: 86% !important;
+  margin: auto !important;
+  border-radius: 6px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+}
+
+.layout-single-inset .photo-frame img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block;
+}
+
+/* ----------------------------------------------------
+   LAYOUT 2: STAGGERED VERTICAL ZIGZAG (LEFT HIGH, RIGHT LOW)
+   One image starts higher at top: 0, the other starts lower with 50px offset
+   ---------------------------------------------------- */
+.layout-staggered-vertical {
+  height: 100%;
+  width: 100%;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+}
+
+.layout-staggered-vertical .photo-frame {
+  width: calc(50% - 6px) !important;
+  height: calc(100% - 50px) !important;
+  flex: none !important;
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.layout-staggered-vertical .photo-frame:first-child {
+  margin-top: 0 !important;
+  margin-bottom: 50px !important;
+}
+
+.layout-staggered-vertical .photo-frame:last-child {
+  margin-top: 50px !important;
+  margin-bottom: 0 !important;
+}
+
+.layout-staggered-vertical .photo-frame img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block;
+}
+
+/* ----------------------------------------------------
+   LAYOUT 2B: INVERTED STAGGERED VERTICAL ZIGZAG (LEFT LOW, RIGHT HIGH)
+   ---------------------------------------------------- */
+.layout-staggered-vertical-inverted {
+  height: 100%;
+  width: 100%;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+}
+
+.layout-staggered-vertical-inverted .photo-frame {
+  width: calc(50% - 6px) !important;
+  height: calc(100% - 50px) !important;
+  flex: none !important;
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.layout-staggered-vertical-inverted .photo-frame:first-child {
+  margin-top: 50px !important;
+  margin-bottom: 0 !important;
+}
+
+.layout-staggered-vertical-inverted .photo-frame:last-child {
+  margin-top: 0 !important;
+  margin-bottom: 50px !important;
+}
+
+.layout-staggered-vertical-inverted .photo-frame img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block;
+}
+
+/* ----------------------------------------------------
+   LAYOUT 3: HORIZONTAL STAGGERED ZIGZAG (TOP LEFT, BOTTOM RIGHT)
+   ---------------------------------------------------- */
+.layout-zigzag-horizontal {
+  height: 100%;
+  width: 100%;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+}
+
+.layout-zigzag-horizontal .photo-frame {
+  width: 88% !important;
+  height: calc(50% - 6px) !important;
+  flex: none !important;
+  border-radius: 6px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
+  overflow: hidden;
+}
+
+.layout-zigzag-horizontal .photo-frame:first-child {
+  align-self: flex-start !important;
+  margin-right: auto !important;
+  margin-left: 0 !important;
+}
+
+.layout-zigzag-horizontal .photo-frame:last-child {
+  align-self: flex-end !important;
+  margin-left: auto !important;
+  margin-right: 0 !important;
+}
+
+.layout-zigzag-horizontal .photo-frame img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block;
+}
+
+/* ----------------------------------------------------
+   LAYOUT 3B: INVERTED HORIZONTAL STAGGERED ZIGZAG (TOP RIGHT, BOTTOM LEFT)
+   ---------------------------------------------------- */
+.layout-zigzag-horizontal-inverted {
+  height: 100%;
+  width: 100%;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+}
+
+.layout-zigzag-horizontal-inverted .photo-frame {
+  width: 88% !important;
+  height: calc(50% - 6px) !important;
+  flex: none !important;
+  border-radius: 6px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
+  overflow: hidden;
+}
+
+.layout-zigzag-horizontal-inverted .photo-frame:first-child {
+  align-self: flex-end !important;
+  margin-left: auto !important;
+  margin-right: 0 !important;
+}
+
+.layout-zigzag-horizontal-inverted .photo-frame:last-child {
+  align-self: flex-start !important;
+  margin-right: auto !important;
+  margin-left: 0 !important;
+}
+
+.layout-zigzag-horizontal-inverted .photo-frame img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block;
+}
+
+/* ----------------------------------------------------
+   LAYOUT 4: ASYMMETRIC DUO (DOMINANT TOP 62%, ACCENT STRIP BOTTOM 38%)
+   ---------------------------------------------------- */
+.layout-asymmetric-duo {
+  height: 100%;
+  width: 100%;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+
+.layout-asymmetric-duo .photo-frame:first-child {
+  width: 100% !important;
+  height: calc(62% - 5px) !important;
+  flex: none !important;
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.layout-asymmetric-duo .photo-frame:last-child {
+  width: 100% !important;
+  height: calc(38% - 5px) !important;
+  flex: none !important;
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.13);
+  overflow: hidden;
+}
+
+.layout-asymmetric-duo .photo-frame img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block;
+}
+
+/* ----------------------------------------------------
+   LAYOUT 4B: ASYMMETRIC DUO INVERTED (ACCENT STRIP TOP 38%, DOMINANT BOTTOM 62%)
+   ---------------------------------------------------- */
+.layout-asymmetric-duo-inverted {
+  height: 100%;
+  width: 100%;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+
+.layout-asymmetric-duo-inverted .photo-frame:first-child {
+  width: 100% !important;
+  height: calc(38% - 5px) !important;
+  flex: none !important;
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.13);
+  overflow: hidden;
+}
+
+.layout-asymmetric-duo-inverted .photo-frame:last-child {
+  width: 100% !important;
+  height: calc(62% - 5px) !important;
+  flex: none !important;
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.layout-asymmetric-duo-inverted .photo-frame img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block;
+}
+
+/* ----------------------------------------------------
+   LAYOUT 5: STANDARD DUAL EQUAL (FALLBACK / 50-50 STACK)
    ---------------------------------------------------- */
 .layout-dual-equal,
 .layout-zigzag,
@@ -1214,7 +1470,7 @@ header {
     font-size: 32px;
   }
   .page-content {
-    inset: 32px 24px 34px 24px;
+    inset: 12px;
   }
 }
 
