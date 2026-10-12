@@ -322,6 +322,33 @@ header {
     radial-gradient(circle at 0% 50%, rgba(0,0,0,0.03) 0%, transparent 60%);
 }
 
+/* Realistic 3D book spine crease overlay on top of full-bleed photos */
+.page-face::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 24px;
+  pointer-events: none;
+  z-index: 15;
+}
+
+.page-face.page-front::after {
+  left: 0;
+  background: linear-gradient(to right, rgba(15, 10, 5, 0.3) 0%, rgba(15, 10, 5, 0.08) 45%, transparent 100%);
+}
+
+.page-face.page-back::after {
+  right: 0;
+  background: linear-gradient(to left, rgba(15, 10, 5, 0.3) 0%, rgba(15, 10, 5, 0.08) 45%, transparent 100%);
+}
+
+.cover-front::after,
+.cover-back::after,
+.toc-page::after {
+  display: none !important;
+}
+
 /* Page corner turn hint & click zones */
 .flip-hotspot-left, .flip-hotspot-right {
   position: absolute;
@@ -370,22 +397,28 @@ header {
   color: #111;
 }
 
-/* Page footer & numbering */
+/* Page footer & numbering (High contrast overlay for full-bleed photos) */
 .page-number {
   position: absolute;
-  bottom: 18px;
+  bottom: 14px;
   font-family: 'Newsreader', Georgia, serif;
   font-size: 14px;
-  color: var(--paper-muted);
+  font-weight: 600;
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.95), 0 0 8px rgba(0, 0, 0, 0.8) !important;
   font-style: italic;
   pointer-events: none;
-  z-index: 10;
+  z-index: 25;
 }
 .page-face.page-front .page-number {
-  right: 28px;
+  right: 20px;
 }
 .page-face.page-back .page-number {
-  left: 28px;
+  left: 20px;
+}
+.page-face.toc-page .page-number {
+  color: #6B6258 !important;
+  text-shadow: none !important;
 }
 
 .page-header-title {
@@ -523,13 +556,16 @@ header {
 }
 
 /* ==========================================================================
-   DYNAMIC IMAGE LAYOUT SYSTEM
+   DYNAMIC IMAGE LAYOUT SYSTEM (FULL-BLEED EDGE-TO-EDGE "EDGE TAK COVER")
    ========================================================================== */
 .page-content {
-  position: absolute;
-  inset: 14px 14px 34px 14px;
-  display: flex;
-  flex-direction: column;
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
 }
 
 /* Hide all text content, headers, quotes, tags and captions per user request */
@@ -542,56 +578,65 @@ header {
 
 /* Photo Frames & Hover Effects */
 .photo-frame {
-  position: relative;
-  overflow: hidden;
-  border-radius: 6px;
-  background: #E8E2D8;
+  position: relative !important;
+  overflow: hidden !important;
+  border-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  background: #120F1D;
   cursor: pointer;
-  transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1), box-shadow 0.45s ease;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
+  transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1);
 }
 
 .photo-frame img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
   transition: transform 0.75s cubic-bezier(0.2, 0.9, 0.3, 1.05);
 }
 
 .photo-frame:hover {
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28), 0 0 0 2px var(--accent);
-  z-index: 20;
+  z-index: 20 !important;
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
 }
 
 .photo-frame:hover img {
-  transform: scale(1.04);
+  transform: scale(1.035);
 }
 
 /* ----------------------------------------------------
-   LAYOUT 1: SINGLE HERO (EXACT SCREENSHOT 1 PROPORTIONS: 405PX CENTERED)
+   LAYOUT 1: SINGLE FULL-BLEED HERO (100% WIDTH & 100% HEIGHT TO ALL EDGES)
    ---------------------------------------------------- */
-.layout-single-hero {
-  height: 100%;
-  width: 100%;
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: center !important;
-  align-items: center !important;
+.layout-single-hero,
+.layout-single-inset {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
-.layout-single-hero .photo-frame {
+.layout-single-hero .photo-frame,
+.layout-single-inset .photo-frame {
+  position: absolute !important;
+  inset: 0 !important;
   width: 100% !important;
-  height: 405px !important;
-  max-height: 405px !important;
-  min-height: 405px !important;
+  height: 100% !important;
+  max-height: none !important;
+  min-height: 100% !important;
   flex: none !important;
-  border-radius: 8px !important;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
   overflow: hidden !important;
 }
 
-.layout-single-hero .photo-frame img {
+.layout-single-hero .photo-frame img,
+.layout-single-inset .photo-frame img {
   width: 100% !important;
   height: 100% !important;
   object-fit: cover !important;
@@ -599,375 +644,154 @@ header {
 }
 
 /* ----------------------------------------------------
-   LAYOUT 2: DUAL EQUAL (100% FULL WIDTH, 50/50 CLEAN GALLERY STACK)
-   ---------------------------------------------------- */
-.layout-dual-equal {
-  height: 100%;
-  width: 100%;
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: space-between !important;
-  gap: 12px !important;
-}
-
-.layout-dual-equal .photo-frame {
-  width: 100% !important;
-  height: calc(50% - 6px) !important;
-  flex: none !important;
-  border-radius: 6px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
-  overflow: hidden;
-}
-
-.layout-dual-equal .photo-frame img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  display: block;
-}
-
-/* ----------------------------------------------------
-   LAYOUT 2B: ASYMMETRIC DUO (DOMINANT TOP 62%, ACCENT BOTTOM 38%)
-   ---------------------------------------------------- */
-.layout-asymmetric-duo {
-  height: 100%;
-  width: 100%;
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: space-between !important;
-  gap: 12px !important;
-}
-
-.layout-asymmetric-duo .photo-frame:first-child {
-  width: 100% !important;
-  height: calc(62% - 6px) !important;
-  flex: none !important;
-  border-radius: 6px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
-  overflow: hidden;
-}
-
-.layout-asymmetric-duo .photo-frame:last-child {
-  width: 100% !important;
-  height: calc(38% - 6px) !important;
-  flex: none !important;
-  border-radius: 6px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.13);
-  overflow: hidden;
-}
-
-.layout-asymmetric-duo .photo-frame img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  display: block;
-}
-
-/* ----------------------------------------------------
-   LAYOUT 2C: ASYMMETRIC DUO INVERTED (ACCENT TOP 38%, DOMINANT BOTTOM 62%)
-   ---------------------------------------------------- */
-.layout-asymmetric-duo-inverted {
-  height: 100%;
-  width: 100%;
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: space-between !important;
-  gap: 12px !important;
-}
-
-.layout-asymmetric-duo-inverted .photo-frame:first-child {
-  width: 100% !important;
-  height: calc(38% - 6px) !important;
-  flex: none !important;
-  border-radius: 6px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.13);
-  overflow: hidden;
-}
-
-.layout-asymmetric-duo-inverted .photo-frame:last-child {
-  width: 100% !important;
-  height: calc(62% - 6px) !important;
-  flex: none !important;
-  border-radius: 6px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
-  overflow: hidden;
-}
-
-.layout-asymmetric-duo-inverted .photo-frame img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  display: block;
-}
-
-/* ----------------------------------------------------
-   LAYOUT 2D: TACTILE SCRAPBOOK OVERLAP (ARCHIVAL FOLIO STYLE)
-   ---------------------------------------------------- */
-.layout-scrapbook {
-  position: relative !important;
-  height: 100%;
-  width: 100%;
-}
-
-.layout-scrapbook .photo-frame {
-  position: absolute !important;
-  border-radius: 6px;
-  overflow: hidden;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
-  transition: transform 0.4s ease, box-shadow 0.4s ease, z-index 0.2s ease;
-  background: #FFF;
-  padding: 4px;
-}
-
-.layout-scrapbook .photo-frame:first-child {
-  width: 86% !important;
-  height: 52% !important;
-  top: 0 !important;
-  left: 0 !important;
-  transform: rotate(-1.5deg);
-  z-index: 2;
-}
-
-.layout-scrapbook .photo-frame:last-child {
-  width: 86% !important;
-  height: 52% !important;
-  bottom: 0 !important;
-  right: 0 !important;
-  transform: rotate(1.5deg);
-  z-index: 3;
-}
-
-.layout-scrapbook .photo-frame:hover {
-  transform: scale(1.03) rotate(0deg) !important;
-  z-index: 10 !important;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.32), 0 0 0 2px var(--accent);
-}
-
-.layout-scrapbook .photo-frame img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  display: block;
-  border-radius: 4px;
-}
-
-/* Fallback aliases for any legacy references to vertical classes */
-.layout-staggered-vertical {
-  height: 100%;
-  width: 100%;
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: space-between !important;
-  gap: 12px !important;
-}
-.layout-staggered-vertical .photo-frame {
-  width: 90% !important;
-  height: calc(50% - 6px) !important;
-  flex: none !important;
-  border-radius: 6px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
-  overflow: hidden;
-}
-.layout-staggered-vertical .photo-frame:first-child {
-  align-self: flex-start !important;
-  margin-right: auto !important;
-  margin-left: 0 !important;
-}
-.layout-staggered-vertical .photo-frame:last-child {
-  align-self: flex-end !important;
-  margin-left: auto !important;
-  margin-right: 0 !important;
-}
-.layout-staggered-vertical .photo-frame img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  display: block;
-}
-
-.layout-staggered-vertical-inverted {
-  height: 100%;
-  width: 100%;
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: space-between !important;
-  gap: 12px !important;
-}
-.layout-staggered-vertical-inverted .photo-frame {
-  width: 90% !important;
-  height: calc(50% - 6px) !important;
-  flex: none !important;
-  border-radius: 6px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
-  overflow: hidden;
-}
-.layout-staggered-vertical-inverted .photo-frame:first-child {
-  align-self: flex-end !important;
-  margin-left: auto !important;
-  margin-right: 0 !important;
-}
-.layout-staggered-vertical-inverted .photo-frame:last-child {
-  align-self: flex-start !important;
-  margin-right: auto !important;
-  margin-left: 0 !important;
-}
-.layout-staggered-vertical-inverted .photo-frame img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  display: block;
-}
-
-/* ----------------------------------------------------
-   LAYOUT 3: HORIZONTAL STAGGERED ZIGZAG (TOP LEFT, BOTTOM RIGHT)
-   Both images have the EXACT SAME height and width.
-   Top aligned left, bottom aligned right.
-   ---------------------------------------------------- */
-.layout-zigzag-horizontal {
-  height: 100%;
-  width: 100%;
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: space-between !important;
-  gap: 12px !important;
-}
-
-.layout-zigzag-horizontal .photo-frame {
-  width: 90% !important;
-  height: calc(50% - 6px) !important;
-  flex: none !important;
-  border-radius: 6px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
-  overflow: hidden;
-}
-
-.layout-zigzag-horizontal .photo-frame:first-child {
-  align-self: flex-start !important;
-  margin-right: auto !important;
-  margin-left: 0 !important;
-}
-
-.layout-zigzag-horizontal .photo-frame:last-child {
-  align-self: flex-end !important;
-  margin-left: auto !important;
-  margin-right: 0 !important;
-}
-
-.layout-zigzag-horizontal .photo-frame img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  display: block;
-}
-
-/* ----------------------------------------------------
-   LAYOUT 3B: INVERTED HORIZONTAL STAGGERED ZIGZAG (TOP RIGHT, BOTTOM LEFT)
-   Both images have the EXACT SAME height and width.
-   Top aligned right, bottom aligned left.
-   ---------------------------------------------------- */
-.layout-zigzag-horizontal-inverted {
-  height: 100%;
-  width: 100%;
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: space-between !important;
-  gap: 12px !important;
-}
-
-.layout-zigzag-horizontal-inverted .photo-frame {
-  width: 90% !important;
-  height: calc(50% - 6px) !important;
-  flex: none !important;
-  border-radius: 6px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
-  overflow: hidden;
-}
-
-.layout-zigzag-horizontal-inverted .photo-frame:first-child {
-  align-self: flex-end !important;
-  margin-left: auto !important;
-  margin-right: 0 !important;
-}
-
-.layout-zigzag-horizontal-inverted .photo-frame:last-child {
-  align-self: flex-start !important;
-  margin-right: auto !important;
-  margin-left: 0 !important;
-}
-
-.layout-zigzag-horizontal-inverted .photo-frame img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  display: block;
-}
-
-/* ----------------------------------------------------
-   LAYOUT 4: SINGLE HERO INSET (FALLBACK SAME 100% SIZE)
-   ---------------------------------------------------- */
-.layout-single-inset {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.layout-single-inset .photo-frame {
-  width: 100% !important;
-  height: 100% !important;
-  flex: 1 !important;
-  border-radius: 6px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
-  overflow: hidden;
-}
-
-.layout-single-inset .photo-frame img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  display: block;
-}
-
-/* ----------------------------------------------------
-   LAYOUT 5: STANDARD DUAL EQUAL (FALLBACK / 50-50 STACK)
+   LAYOUT 2: DUAL EQUAL (FULL-BLEED 50/50 VERTICAL STACK TO EDGES)
    ---------------------------------------------------- */
 .layout-dual-equal,
+.layout-scrapbook,
 .layout-zigzag,
-.layout-scrapbook {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.layout-zigzag-horizontal,
+.layout-zigzag-horizontal-inverted,
+.layout-staggered-vertical,
+.layout-staggered-vertical-inverted {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  gap: 3px !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 .layout-dual-equal .photo-frame,
+.layout-scrapbook .photo-frame,
 .layout-zigzag .photo-frame,
-.layout-scrapbook .photo-frame {
+.layout-zigzag-horizontal .photo-frame,
+.layout-zigzag-horizontal-inverted .photo-frame,
+.layout-staggered-vertical .photo-frame,
+.layout-staggered-vertical-inverted .photo-frame {
   position: relative !important;
   top: auto !important;
   bottom: auto !important;
   left: auto !important;
   right: auto !important;
   transform: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
   width: 100% !important;
-  height: calc(50% - 5px) !important;
+  height: calc(50% - 1.5px) !important;
   max-height: none !important;
   min-height: 0 !important;
-  flex: 1 !important;
-  border-radius: 6px;
+  flex: 1 1 calc(50% - 1.5px) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
   border: none !important;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
-  overflow: hidden;
+  overflow: hidden !important;
 }
 
 .layout-dual-equal .photo-frame img,
+.layout-scrapbook .photo-frame img,
 .layout-zigzag .photo-frame img,
-.layout-scrapbook .photo-frame img {
+.layout-zigzag-horizontal .photo-frame img,
+.layout-zigzag-horizontal-inverted .photo-frame img,
+.layout-staggered-vertical .photo-frame img,
+.layout-staggered-vertical-inverted .photo-frame img {
   width: 100% !important;
   height: 100% !important;
   object-fit: cover !important;
-  display: block;
+  display: block !important;
+}
+
+/* ----------------------------------------------------
+   LAYOUT 2B: ASYMMETRIC DUO (FULL-BLEED TOP 62%, ACCENT BOTTOM 38%)
+   ---------------------------------------------------- */
+.layout-asymmetric-duo {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  gap: 3px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.layout-asymmetric-duo .photo-frame:first-child {
+  position: relative !important;
+  width: 100% !important;
+  height: calc(62% - 1.5px) !important;
+  flex: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+  overflow: hidden !important;
+}
+
+.layout-asymmetric-duo .photo-frame:last-child {
+  position: relative !important;
+  width: 100% !important;
+  height: calc(38% - 1.5px) !important;
+  flex: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+  overflow: hidden !important;
+}
+
+.layout-asymmetric-duo .photo-frame img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+/* ----------------------------------------------------
+   LAYOUT 2C: ASYMMETRIC DUO INVERTED (FULL-BLEED ACCENT TOP 38%, DOMINANT BOTTOM 62%)
+   ---------------------------------------------------- */
+.layout-asymmetric-duo-inverted {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  gap: 3px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.layout-asymmetric-duo-inverted .photo-frame:first-child {
+  position: relative !important;
+  width: 100% !important;
+  height: calc(38% - 1.5px) !important;
+  flex: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+  overflow: hidden !important;
+}
+
+.layout-asymmetric-duo-inverted .photo-frame:last-child {
+  position: relative !important;
+  width: 100% !important;
+  height: calc(62% - 1.5px) !important;
+  flex: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+  overflow: hidden !important;
+}
+
+.layout-asymmetric-duo-inverted .photo-frame img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
 }
 
 /* ----------------------------------------------------
@@ -1545,9 +1369,6 @@ header {
   .cover-headline {
     font-size: 32px;
   }
-  .page-content {
-    inset: 12px 12px 28px 12px;
-  }
 }
 
 @media (max-width: 800px) {
@@ -1573,11 +1394,6 @@ header {
     width: 44px;
     height: 44px;
     border-radius: 12px;
-  }
-  .layout-single-hero .photo-frame {
-    height: 270px !important;
-    max-height: 270px !important;
-    min-height: 270px !important;
   }
 }
 
