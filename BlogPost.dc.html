@@ -1,0 +1,779 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Gallery Book</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+button:disabled{cursor:default}
+.face{backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden}
+.navlink:hover{color:#FF5A36}
+.story-link:hover{color:#B8381A}
+
+/* ============================================================
+   GALLERY GRID — pure flex, no blur, no crop
+   Images object-fit: cover — tile poora bharta hai
+   Par tile size image ke hisaab se decide hota hai
+   ============================================================ */
+.gallery{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  padding:0;
+}
+
+/* Row of tiles */
+.gal-row{
+  display:flex;
+  flex-direction:row;
+  gap:12px;
+  flex:1;
+  min-height:0;
+}
+
+/* Single tile */
+.gal-tile{
+  position:relative;
+  border-radius:10px;
+  overflow:hidden;
+  background:#0d0b18;
+  cursor:pointer;
+  transition:box-shadow .35s ease, transform .35s ease;
+  flex:1;
+  min-width:0;
+  min-height:0;
+}
+.gal-tile img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  transition:transform .8s cubic-bezier(.2,.9,.3,1.05);
+  -webkit-user-drag:none;
+  user-select:none;
+}
+.gal-tile:hover{
+  box-shadow:0 16px 40px rgba(0,0,0,0.55), 0 0 0 1.5px rgba(255,90,54,0.7);
+  z-index:5;
+}
+.gal-tile:hover img{
+  transform:scale(1.06);
+}
+
+/* Caption */
+.gal-tile .cap{
+  position:absolute;
+  left:10px;
+  bottom:10px;
+  padding:4px 10px;
+  border-radius:99px;
+  background:rgba(0,0,0,0.65);
+  color:#fff;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  backdrop-filter:blur(6px);
+  z-index:2;
+  pointer-events:none;
+}
+
+/* Entry animation */
+.gal-tile{
+  opacity:0;
+  transform:translateY(16px) scale(0.96);
+  transition:opacity .7s ease, transform .8s cubic-bezier(.2,.9,.3,1.15), box-shadow .35s ease;
+}
+.gal-tile.revealed{
+  opacity:1;
+  transform:translateY(0) scale(1);
+}
+
+/* ============================================================
+   FULL PAGE BACKGROUND COVER (ek image dono pages pe)
+   ============================================================ */
+.page-bg-image{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  border-radius:4px 14px 14px 4px;
+  background:#0d0b18;
+}
+.page-bg-image img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.page-bg-image .overlay{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 50%);
+  pointer-events:none;
+}
+.page-bg-image .cap{
+  position:absolute;
+  left:24px;
+  bottom:24px;
+  padding:8px 16px;
+  border-radius:99px;
+  background:rgba(0,0,0,0.55);
+  color:#fff;
+  font-size:13px;
+  font-weight:600;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,0.18);
+}
+
+/* Full-spread banner (across both pages) */
+.spread-banner{
+  position:absolute;
+  left:0;
+  top:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  border-radius:4px 14px 14px 4px;
+  opacity:0;
+  transform:scale(1.03);
+  transition:opacity 1s ease, transform 1.2s cubic-bezier(.2,.9,.3,1.08);
+  z-index:2;
+  visibility:hidden;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  background:#0d0b18;
+}
+.spread-banner.revealed{
+  opacity:1;
+  transform:scale(1);
+}
+.spread-banner img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.spread-banner .spread-cap{
+  position:absolute;
+  left:50%;
+  bottom:36px;
+  transform:translateX(-50%);
+  padding:8px 18px;
+  border-radius:99px;
+  background:rgba(0,0,0,0.55);
+  color:#fff;
+  font-size:13px;
+  font-weight:600;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,0.18);
+  white-space:nowrap;
+}
+</style>
+</helmet>
+
+<div style="font-family: 'Figtree', sans-serif; background: radial-gradient(1100px 620px at 50% 0%, #2A2140 0%, rgba(42,33,64,0) 70%), #11131A; color: #FFFFFF; width: 100%; min-height: 100%;">
+
+<!-- HEADER -->
+<header>
+<div style="max-width: 1280px; margin: 0 auto; padding: 20px 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px;">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px;">
+<span style="width: 40px; height: 40px; border-radius: 12px; background: {{accent}}; display: flex; align-items: center; justify-content: center; color: #11131A;">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path></svg>
+</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 26px; letter-spacing: -0.02em;">Lumen</span>
+</a>
+<nav style="display: flex; flex-wrap: wrap; gap: 8px 32px; font-weight: 500; font-size: 16px;">
+<a class="navlink" href="Main.dc.html">Home</a>
+<a class="navlink" href="Main.dc.html">Posts</a>
+<a class="navlink" href="Main.dc.html">Videos</a>
+<a class="navlink" href="Main.dc.html" style="color: #FFFFFF; font-weight: 600;">Gallery</a>
+</nav>
+<a href="Main.dc.html" style="height: 44px; padding: 0 20px; border-radius: 14px; border: 1px solid #3A3F50; color: #FFFFFF; font-weight: 600; font-size: 15px; display: inline-flex; align-items: center; gap: 8px;">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg>
+Back to homepage
+</a>
+</div>
+</header>
+
+<!-- INTRO -->
+<section style="max-width: 720px; margin: 0 auto; padding: 24px 24px 40px; text-align: center; display: flex; flex-direction: column; gap: 12px; align-items: center;">
+<span style="font-weight: 600; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; color: {{accent}};">Gallery · 50 frames · Oct 5, 2026</span>
+<p style="margin: 0; font-size: 18px; line-height: 1.55; color: #C9CDDA;">A gallery that behaves like a book. Turn the pages — grids, banners and covers.</p>
+</section>
+
+<!-- THE BOOK -->
+<section style="max-width: 1280px; margin: 0 auto; padding: 0 16px;">
+<div style="{{viewStyle}}">
+<div style="{{shiftStyle}}">
+<div style="{{shadowStyle}}"></div>
+<div style="{{bookStyle}}">
+
+<!-- back cover -->
+<div style="position: absolute; left: 480px; top: 0; width: 480px; height: 660px; z-index: 0; box-sizing: border-box; border-radius: 4px 14px 14px 4px; background: radial-gradient(circle 280px at 20% 85%, rgba(229,86,123,0.55) 0%, rgba(229,86,123,0) 100%), #1B1033; color: #FFFFFF; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; text-align: center; padding: 0 48px;">
+<span style="width: 64px; height: 64px; border-radius: 18px; background: {{accent}}; display: flex; align-items: center; justify-content: center; color: #11131A;">
+<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path></svg>
+</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 34px; letter-spacing: -0.02em;">End of gallery</span>
+<span style="font-size: 16px; line-height: 1.5; color: #D5D0E6;">Come back next week for a new set.</span>
+</div>
+
+<!-- ================ LEAF 0 : COVER + CONTENTS ================ -->
+<div style="{{leaf0.style}}">
+<div class="face" style="position:absolute;left:0;top:0;width:480px;height:660px;box-sizing:border-box;overflow:hidden;border-radius:4px 14px 14px 4px;background:radial-gradient(circle 250px at 76% 24%, #FF7A4D 0%, #E5567B 45%, rgba(229,86,123,0) 100%), #1B1033;color:#FFFFFF;">
+<div style="position:absolute;left:0;top:0;bottom:0;width:22px;background:linear-gradient(to right, rgba(0,0,0,0.38), rgba(0,0,0,0.12) 60%, rgba(0,0,0,0));border-right:1px solid rgba(255,255,255,0.12);"></div>
+<div style="position:absolute;left:244px;top:56px;width:190px;height:190px;border-radius:99px;border:1px solid rgba(255,255,255,0.35);"></div>
+<div style="position:absolute;left:274px;top:86px;width:130px;height:130px;border-radius:99px;border:1px solid rgba(255,255,255,0.45);"></div>
+<div style="position:absolute;left:304px;top:116px;width:70px;height:70px;border-radius:99px;background:rgba(255,255,255,0.92);"></div>
+<div style="position:absolute;left:52px;top:48px;display:flex;align-items:center;gap:10px;">
+<span style="width:34px;height:34px;border-radius:10px;background:{{accent}};display:flex;align-items:center;justify-content:center;color:#11131A;">
+<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path></svg>
+</span>
+<span style="font-weight:600;font-size:13px;letter-spacing:0.14em;text-transform:uppercase;">Lumen Journal</span>
+</div>
+<div style="position:absolute;left:0;right:0;bottom:0;padding:120px 44px 44px 52px;background:linear-gradient(to top, rgba(20,10,40,0.96) 40%, rgba(20,10,40,0));display:flex;flex-direction:column;gap:16px;">
+<span style="align-self:flex-start;padding:6px 14px;border-radius:99px;background:{{accent}};color:#11131A;font-weight:700;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;">Gallery</span>
+<h1 style="margin:0;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:44px;line-height:1.02;letter-spacing:-0.03em;">Fifty frames from a single season</h1>
+<span style="font-size:15px;color:#E3DDF0;">Editorial team · 50 photographs</span>
+<span style="font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:#E3DDF0;border-top:1px solid rgba(255,255,255,0.25);padding-top:14px;">Open the book →</span>
+</div>
+</div>
+<div class="face" style="position:absolute;left:0;top:0;width:480px;height:660px;box-sizing:border-box;padding:48px 44px 56px;overflow:hidden;border-radius:14px 4px 4px 14px;transform:rotateY(180deg);background-color:{{paper}};background-image:linear-gradient(to left, rgba(70,45,20,0.22) 0%, rgba(70,45,20,0.07) 4%, rgba(70,45,20,0) 11%);">
+<div style="display:flex;flex-direction:column;height:100%;">
+<span style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#B8381A;">In this gallery</span>
+<h2 style="margin:10px 0 14px;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:30px;line-height:1.08;letter-spacing:-0.02em;color:#14110F;">A season in fifty frames</h2>
+<p style="margin:0 0 22px;font-family:'Newsreader',Georgia,serif;font-style:italic;font-size:17px;line-height:1.55;color:#4A433B;">Photographs by the Lumen team, across six weeks of light, weather, and quiet mornings.</p>
+<div style="display:flex;flex-direction:column;">
+<div style="display:flex;align-items:baseline;gap:14px;padding:10px 0;border-bottom:1px dotted #B9AE9D;"><span style="width:24px;font-size:13px;font-weight:600;color:#B8381A;">01</span><span style="flex:1;font-family:'Newsreader',Georgia,serif;font-size:16px;color:#2A2622;">Singles</span><span style="font-size:14px;color:#6B635A;">1–2</span></div>
+<div style="display:flex;align-items:baseline;gap:14px;padding:10px 0;border-bottom:1px dotted #B9AE9D;"><span style="width:24px;font-size:13px;font-weight:600;color:#B8381A;">02</span><span style="flex:1;font-family:'Newsreader',Georgia,serif;font-size:16px;color:#2A2622;">Full cover I</span><span style="font-size:14px;color:#6B635A;">3–4</span></div>
+<div style="display:flex;align-items:baseline;gap:14px;padding:10px 0;border-bottom:1px dotted #B9AE9D;"><span style="width:24px;font-size:13px;font-weight:600;color:#B8381A;">03</span><span style="flex:1;font-family:'Newsreader',Georgia,serif;font-size:16px;color:#2A2622;">Pairs</span><span style="font-size:14px;color:#6B635A;">5–6</span></div>
+<div style="display:flex;align-items:baseline;gap:14px;padding:10px 0;border-bottom:1px dotted #B9AE9D;"><span style="width:24px;font-size:13px;font-weight:600;color:#B8381A;">04</span><span style="flex:1;font-family:'Newsreader',Georgia,serif;font-size:16px;color:#2A2622;">Wide banner</span><span style="font-size:14px;color:#6B635A;">7–8</span></div>
+<div style="display:flex;align-items:baseline;gap:14px;padding:10px 0;border-bottom:1px dotted #B9AE9D;"><span style="width:24px;font-size:13px;font-weight:600;color:#B8381A;">05</span><span style="flex:1;font-family:'Newsreader',Georgia,serif;font-size:16px;color:#2A2622;">Trios</span><span style="font-size:14px;color:#6B635A;">9–10</span></div>
+<div style="display:flex;align-items:baseline;gap:14px;padding:10px 0;border-bottom:1px dotted #B9AE9D;"><span style="width:24px;font-size:13px;font-weight:600;color:#B8381A;">06</span><span style="flex:1;font-family:'Newsreader',Georgia,serif;font-size:16px;color:#2A2622;">Full cover II</span><span style="font-size:14px;color:#6B635A;">11–12</span></div>
+<div style="display:flex;align-items:baseline;gap:14px;padding:10px 0;border-bottom:1px dotted #B9AE9D;"><span style="width:24px;font-size:13px;font-weight:600;color:#B8381A;">07</span><span style="flex:1;font-family:'Newsreader',Georgia,serif;font-size:16px;color:#2A2622;">Trios II</span><span style="font-size:14px;color:#6B635A;">13–14</span></div>
+<div style="display:flex;align-items:baseline;gap:14px;padding:10px 0;"><span style="width:24px;font-size:13px;font-weight:600;color:#B8381A;">08</span><span style="flex:1;font-family:'Newsreader',Georgia,serif;font-size:16px;color:#2A2622;">Finale cover</span><span style="font-size:14px;color:#6B635A;">15–16</span></div>
+</div>
+<span style="margin-top:auto;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:#6B635A;">Turn the page →</span>
+</div>
+</div>
+</div>
+
+<!-- ================ LEAF 1 : ONE PER PAGE ================ -->
+<div style="{{leaf1.style}}">
+<div class="face" data-gallery="1L" style="position:absolute;left:0;top:0;width:480px;height:660px;box-sizing:border-box;padding:32px;overflow:hidden;border-radius:4px 14px 14px 4px;background-color:{{paper}};background-image:linear-gradient(to right, rgba(70,45,20,0.22) 0%, rgba(70,45,20,0.07) 4%, rgba(70,45,20,0) 11%);">
+<div style="position:absolute;inset:32px;" data-gallery-slot="1L"></div>
+<span style="position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:13px;color:#6B635A;">1</span>
+</div>
+<div class="face" data-gallery="1R" style="position:absolute;left:0;top:0;width:480px;height:660px;box-sizing:border-box;padding:32px;overflow:hidden;border-radius:14px 4px 4px 14px;transform:rotateY(180deg);background-color:{{paper}};background-image:linear-gradient(to left, rgba(70,45,20,0.22) 0%, rgba(70,45,20,0.07) 4%, rgba(70,45,20,0) 11%);">
+<div style="position:absolute;inset:32px;" data-gallery-slot="1R"></div>
+<span style="position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:13px;color:#6B635A;">2</span>
+</div>
+</div>
+
+<!-- ================ LEAF 2 : FULL COVER I ================ -->
+<div style="{{leaf2.style}}">
+<div class="face" style="position:absolute;left:0;top:0;width:480px;height:660px;box-sizing:border-box;overflow:hidden;border-radius:4px 14px 14px 4px;background:#0d0b18;">
+<div class="page-bg-image" data-bg-image="2L" data-src="cover-spread-01">
+<img alt="Background" loading="lazy">
+<div class="overlay"></div>
+<div class="cap">Chapter One — Coast</div>
+</div>
+</div>
+<div class="face" style="position:absolute;left:0;top:0;width:480px;height:660px;box-sizing:border-box;overflow:hidden;border-radius:14px 4px 4px 14px;transform:rotateY(180deg);background:#0d0b18;">
+<div class="page-bg-image" data-bg-image="2R" data-src="cover-spread-01">
+<img alt="Background" loading="lazy">
+<div class="overlay"></div>
+</div>
+</div>
+</div>
+
+<!-- ================ LEAF 3 : TWO PER PAGE ================ -->
+<div style="{{leaf3.style}}">
+<div class="face" data-gallery="3L" style="position:absolute;left:0;top:0;width:480px;height:660px;box-sizing:border-box;padding:26px;overflow:hidden;border-radius:4px 14px 14px 4px;background-color:{{paper}};background-image:linear-gradient(to right, rgba(70,45,20,0.22) 0%, rgba(70,45,20,0.07) 4%, rgba(70,45,20,0) 11%);">
+<div style="position:absolute;inset:26px;" data-gallery-slot="3L"></div>
+<span style="position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:13px;color:#6B635A;">5</span>
+</div>
+<div class="face" data-gallery="3R" style="position:absolute;left:0;top:0;width:480px;height:660px;box-sizing:border-box;padding:26px;overflow:hidden;border-radius:14px 4px 4px 14px;transform:rotateY(180deg);background-color:{{paper}};background-image:linear-gradient(to left, rgba(70,45,20,0.22) 0%, rgba(70,45,20,0.07) 4%, rgba(70,45,20,0) 11%);">
+<div style="position:absolute;inset:26px;" data-gallery-slot="3R"></div>
+<span style="position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:13px;color:#6B635A;">6</span>
+</div>
+</div>
+
+<!-- ================ LEAF 4 : WIDE BANNER ================ -->
+<div style="{{leaf4.style}}">
+<div class="face" style="position:absolute;left:0;top:0;width:480px;height:660px;box-sizing:border-box;overflow:hidden;border-radius:4px 14px 14px 4px;background:#0d0b18;"></div>
+<div class="face" style="position:absolute;left:0;top:0;width:480px;height:660px;box-sizing:border-box;overflow:hidden;border-radius:14px 4px 4px 14px;transform:rotateY(180deg);background:#0d0b18;"></div>
+<div class="spread-banner" data-spread-banner="4" data-src="banner-wide-01">
+<img alt="Full spread across both pages" loading="lazy">
+<div class="spread-cap">Pages 7 &amp; 8 — wide panorama</div>
+</div>
+</div>
+
+<!-- ================ LEAF 5 : THREE PER PAGE ================ -->
+<div style="{{leaf5.style}}">
+<div class="face" data-gallery="5L" style="position:absolute;left:0;top:0;width:480px;height:660px;box-sizing:border-box;padding:22px;overflow:hidden;border-radius:4px 14px 14px 4px;background-color:{{paper}};background-image:linear-gradient(to right, rgba(70,45,20,0.22) 0%, rgba(70,45,20,0.07) 4%, rgba(70,45,20,0) 11%);">
+<div style="position:absolute;inset:22px;" data-gallery-slot="5L"></div>
+<span style="position:absolute;bottom:20px;left:0;right:0;text-align:center;font-size:13px;color:#6B635A;">9</span>
+</div>
+<div class="face" data-gallery="5R" style="position:absolute;left:0;top:0;width:480px;height:660px;box-sizing:border-box;padding:22px;overflow:hidden;border-radius:14px 4px 4px 14px;transform:rotateY(180deg);background-color:{{paper}};background-image:linear-gradient(to left, rgba(70,45,20,0.22) 0%, rgba(70,45,20,0.07) 4%, rgba(70,45,20,0) 11%);">
+<div style="position:absolute;inset:22px;" data-gallery-slot="5R"></div>
+<span style="position:absolute;bottom:20px;left:0;right:0;text-align:center;font-size:13px;color:#6B635A;">10</span>
+</div>
+</div>
+
+<!-- ================ LEAF 6 : FULL COVER II ================ -->
+<div style="{{leaf6.style}}">
+<div class="face" style="position:absolute;left:0;top:0;width:480px;height:660px;box-sizing:border-box;overflow:hidden;border-radius:4px 14px 14px 4px;background:#0d0b18;">
+<div class="page-bg-image" data-bg-image="6L" data-src="cover-spread-02">
+<img alt="Background" loading="lazy">
+<div class="overlay"></div>
+<div class="cap">Chapter Two — Mountains</div>
+</div>
+</div>
+<div class="face" style="position:absolute;left:0;top:0;width:480px;height:660px;box-sizing:border-box;overflow:hidden;border-radius:14px 4px 4px 14px;transform:rotateY(180deg);background:#0d0b18;">
+<div class="page-bg-image" data-bg-image="6R" data-src="cover-spread-02">
+<img alt="Background" loading="lazy">
+<div class="overlay"></div>
+</div>
+</div>
+</div>
+
+<!-- ================ LEAF 7 : THREE PER PAGE (mosaic) ================ -->
+<div style="{{leaf7.style}}">
+<div class="face" data-gallery="7L" style="position:absolute;left:0;top:0;width:480px;height:660px;box-sizing:border-box;padding:22px;overflow:hidden;border-radius:4px 14px 14px 4px;background-color:{{paper}};background-image:linear-gradient(to right, rgba(70,45,20,0.22) 0%, rgba(70,45,20,0.07) 4%, rgba(70,45,20,0) 11%);">
+<div style="position:absolute;inset:22px;" data-gallery-slot="7L"></div>
+<span style="position:absolute;bottom:20px;left:0;right:0;text-align:center;font-size:13px;color:#6B635A;">13</span>
+</div>
+<div class="face" data-gallery="7R" style="position:absolute;left:0;top:0;width:480px;height:660px;box-sizing:border-box;padding:22px;overflow:hidden;border-radius:14px 4px 4px 14px;transform:rotateY(180deg);background-color:{{paper}};background-image:linear-gradient(to left, rgba(70,45,20,0.22) 0%, rgba(70,45,20,0.07) 4%, rgba(70,45,20,0) 11%);">
+<div style="position:absolute;inset:22px;" data-gallery-slot="7R"></div>
+<span style="position:absolute;bottom:20px;left:0;right:0;text-align:center;font-size:13px;color:#6B635A;">14</span>
+</div>
+</div>
+
+<!-- ================ LEAF 8 : FINALE COVER ================ -->
+<div style="{{leaf8.style}}">
+<div class="face" style="position:absolute;left:0;top:0;width:480px;height:660px;box-sizing:border-box;overflow:hidden;border-radius:4px 14px 14px 4px;background:#0d0b18;">
+<div class="page-bg-image" data-bg-image="8L" data-src="cover-spread-03">
+<img alt="Background" loading="lazy">
+<div class="overlay"></div>
+<div class="cap">Finale — Last light</div>
+</div>
+</div>
+<div class="face" style="position:absolute;left:0;top:0;width:480px;height:660px;box-sizing:border-box;overflow:hidden;border-radius:14px 4px 4px 14px;transform:rotateY(180deg);background:#0d0b18;">
+<div class="page-bg-image" data-bg-image="8R" data-src="cover-spread-03">
+<img alt="Background" loading="lazy">
+<div class="overlay"></div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</section>
+
+<!-- CONTROLS -->
+<section style="max-width: 720px; margin: 0 auto; padding: 36px 16px 0; display: flex; flex-direction: column; align-items: center; gap: 16px;">
+<span style="font-weight: 600; font-size: 15px; letter-spacing: 0.08em; text-transform: uppercase; color: #E3E6F0;">{{label}}</span>
+<div style="width: 100%; max-width: 420px; height: 4px; border-radius: 4px; background: rgba(255,255,255,0.18);"><div style="{{progressStyle}}"></div></div>
+<div style="display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;">
+<button onClick="{{prevPage}}" disabled="{{atStart}}" aria-label="Previous page" style="{{prevStyle}}">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"></path></svg>
+</button>
+<sc-if value="{{showDots}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; align-items: center;">
+<sc-for list="{{dots}}" as="dot" hint-placeholder-count="9">
+<button onClick="{{dot.pick}}" aria-label="Go to {{dot.name}}" style="width: 44px; height: 44px; background: transparent; border: none; padding: 0; display: flex; align-items: center; justify-content: center;"><span style="{{dot.inner}}"></span></button>
+</sc-for>
+</div>
+</sc-if>
+<button onClick="{{nextPage}}" disabled="{{atEnd}}" aria-label="Next page" style="{{nextStyle}}">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+</button>
+</div>
+<button onClick="{{restart}}" style="height: 44px; padding: 0 18px; border-radius: 12px; border: 1px solid #3A3F50; background: transparent; color: #E3E6F0; font-weight: 600; font-size: 14px;">Back to the cover</button>
+</section>
+
+<!-- FOOTER -->
+<footer style="margin-top: 80px; border-top: 1px solid #2A2E3B;">
+<div style="max-width: 1280px; margin: 0 auto; padding: 32px 24px 40px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; box-sizing: border-box; font-size: 14px; color: #A3A8BA;">
+<span>© 2026 Lumen. All rights reserved.</span>
+<span style="display: flex; flex-wrap: wrap; gap: 8px 24px;"><a href="Main.dc.html">Posts</a><a href="Main.dc.html">Videos</a><a href="Main.dc.html">Gallery</a><a href="Main.dc.html">Privacy</a><a href="Main.dc.html">Terms</a></span>
+</div>
+</footer>
+
+</div>
+</x-dc>
+
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#FF5A36","options":["#FF5A36","#7C8CFF","#2FD3A0","#F2C94C"]},"paper":{"editor":"color","default":"#FBF7EF","options":["#FBF7EF","#FFFFFF","#F3E9D7"]},"$preview":{"width":1440,"height":1400}}'>
+
+// ============================================================
+//  LAYOUTS — flexible row-based layouts
+//  Har layout rows ka array return karta hai
+//  Har row mein 1-3 tiles. Har tile "flex" factor ke saath.
+//  object-fit:cover se image poora tile bhar deti hai — no blur, no gap
+// ============================================================
+const LAYOUTS = {
+  // 1 image — poora page
+  one: () => [
+    [ { flex: 1, cap: 'Coastline' } ]
+  ],
+
+  // 2 images — side by side
+  twoSide: () => [
+    [ { flex: 1, cap: 'Left' }, { flex: 1, cap: 'Right' } ]
+  ],
+
+  // 2 images — stacked
+  twoStacked: () => [
+    [ { flex: 1, cap: 'Morning' } ],
+    [ { flex: 1, cap: 'Fog' } ]
+  ],
+
+  // 3 images — hero top, 2 side bottom
+  threeTop: () => [
+    [ { flex: 1, cap: 'Hero' } ],
+    [ { flex: 1, cap: 'Left' }, { flex: 1, cap: 'Right' } ]
+  ],
+
+  // 3 images — 2 side top, hero bottom
+  threeBottom: () => [
+    [ { flex: 1, cap: 'Left' }, { flex: 1, cap: 'Right' } ],
+    [ { flex: 1, cap: 'Hero' } ]
+  ],
+
+  // 3 images — 3 stacked full width
+  threeStacked: () => [
+    [ { flex: 1, cap: 'One' } ],
+    [ { flex: 1, cap: 'Two' } ],
+    [ { flex: 1, cap: 'Three' } ]
+  ],
+
+  // 3 images — 3 side by side
+  threeSide: () => [
+    [ { flex: 1, cap: 'A' }, { flex: 1, cap: 'B' }, { flex: 1, cap: 'C' } ]
+  ]
+};
+
+// ============================================================
+//  SLOT → LAYOUT
+// ============================================================
+const SLOT_LAYOUT = {
+  '1L':  'one',
+  '1R':  'one',
+  '3L':  'twoStacked',
+  '3R':  'twoStacked',
+  '5L':  'threeStacked',
+  '5R':  'threeTop',
+  '7L':  'threeBottom',
+  '7R':  'threeSide'
+};
+
+const SLOT_SEED = {
+  '1L':  1001, '1R':  1002,
+  '3L':  3001, '3R':  3002,
+  '5L':  5001, '5R':  5002,
+  '7L':  7001, '7R':  7002
+};
+
+const BANNER_IMAGES = {
+  '4':  'https://picsum.photos/seed/banner-wide-01/1920/1320'
+};
+
+const BG_IMAGES = {
+  '2L': 'https://picsum.photos/seed/cover-spread-01/1600/2200',
+  '2R': 'https://picsum.photos/seed/cover-spread-01/1600/2200',
+  '6L': 'https://picsum.photos/seed/cover-spread-02/1600/2200',
+  '6R': 'https://picsum.photos/seed/cover-spread-02/1600/2200',
+  '8L': 'https://picsum.photos/seed/cover-spread-03/1600/2200',
+  '8R': 'https://picsum.photos/seed/cover-spread-03/1600/2200'
+};
+
+// ============================================================
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { index: 0, prev: 0, half: 'r', vw: 1200 };
+  }
+
+  componentDidMount() {
+    this._onResize = () => this.setState({ vw: window.innerWidth });
+    this._onResize();
+    window.addEventListener('resize', this._onResize);
+
+    this._t1 = setTimeout(() => this.buildAllGalleries(), 60);
+    this._t2 = setTimeout(() => this.buildAllGalleries(), 400);
+    this._t3 = setTimeout(() => this.buildAllGalleries(), 1200);
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => this.buildAllGalleries());
+    }
+    this.revealVisible();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.index !== this.state.index || prevState.vw !== this.state.vw) {
+      requestAnimationFrame(() => this.revealVisible());
+    }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    clearTimeout(this._t1);
+    clearTimeout(this._t2);
+    clearTimeout(this._t3);
+  }
+
+  // ---------- Build ----------
+  buildAllGalleries() {
+    // Grid slots — flex-based
+    document.querySelectorAll('[data-gallery-slot]').forEach((slot) => {
+      if (slot.dataset.built === '1') return;
+      const key = slot.getAttribute('data-gallery-slot');
+      const layoutName = SLOT_LAYOUT[key] || 'one';
+      const rows = LAYOUTS[layoutName] ? LAYOUTS[layoutName]() : LAYOUTS.one();
+      const seed = SLOT_SEED[key] || 100;
+
+      // Build flex container
+      slot.innerHTML = '';
+      const gallery = document.createElement('div');
+      gallery.className = 'gallery';
+
+      let imgIndex = 0;
+      rows.forEach((row) => {
+        const rowEl = document.createElement('div');
+        rowEl.className = 'gal-row';
+        row.forEach((item) => {
+          const tile = document.createElement('div');
+          tile.className = 'gal-tile';
+          tile.style.flex = String(item.flex || 1);
+          tile.style.transitionDelay = (imgIndex * 90) + 'ms';
+
+          const img = document.createElement('img');
+          img.loading = 'lazy';
+          img.alt = item.cap || 'Gallery image';
+          img.referrerPolicy = 'no-referrer';
+          img.src = 'https://picsum.photos/seed/' + (seed + imgIndex) + '/1200/900';
+          img.onerror = (function(n){
+            return function(){
+              this.onerror = null;
+              this.src = 'https://picsum.photos/1200/900?random=' + n;
+            };
+          })(seed + imgIndex);
+          tile.appendChild(img);
+
+          if (item.cap) {
+            const cap = document.createElement('div');
+            cap.className = 'cap';
+            cap.textContent = item.cap;
+            tile.appendChild(cap);
+          }
+
+          rowEl.appendChild(tile);
+          imgIndex++;
+        });
+        gallery.appendChild(rowEl);
+      });
+
+      slot.appendChild(gallery);
+      slot.dataset.built = '1';
+    });
+
+    // Banners
+    document.querySelectorAll('[data-spread-banner]').forEach((banner) => {
+      if (banner.dataset.built === '1') return;
+      const img = banner.querySelector('img');
+      const key = banner.getAttribute('data-spread-banner');
+      img.referrerPolicy = 'no-referrer';
+      img.src = BANNER_IMAGES[key] || ('https://picsum.photos/seed/banner-' + key + '/1920/1320');
+      banner.dataset.built = '1';
+    });
+
+    // BG covers
+    document.querySelectorAll('[data-bg-image]').forEach((wrap) => {
+      if (wrap.dataset.built === '1') return;
+      const img = wrap.querySelector('img');
+      const key = wrap.getAttribute('data-bg-image');
+      img.referrerPolicy = 'no-referrer';
+      img.src = BG_IMAGES[key] || ('https://picsum.photos/seed/bg-' + key + '/1600/2200');
+      wrap.dataset.built = '1';
+    });
+
+    this.revealVisible();
+  }
+
+  // ---------- Reveal ----------
+  revealVisible() {
+    const { index, vw, half } = this.state;
+    const single = vw < 900;
+
+    document.querySelectorAll('[data-gallery-slot]').forEach((slot) => {
+      const key = slot.getAttribute('data-gallery-slot');
+      const leafIndex = parseInt(key, 10);
+      const side = key.slice(-1);
+      let visible;
+      if (!single) {
+        visible = leafIndex <= index;
+      } else {
+        visible = (leafIndex < index) || (leafIndex === index && (half === 'r' ? side === 'L' : side === 'R'));
+      }
+      if (!visible) return;
+      slot.querySelectorAll('.gal-tile').forEach((el, i) => {
+        setTimeout(() => el.classList.add('revealed'), 60 + i * 90);
+      });
+    });
+
+    document.querySelectorAll('[data-spread-banner]').forEach((banner) => {
+      const leafIndex = parseInt(banner.getAttribute('data-spread-banner'), 10);
+      const visible = leafIndex <= index;
+      if (!visible) {
+        banner.style.visibility = 'hidden';
+        banner.classList.remove('revealed');
+        return;
+      }
+      banner.style.visibility = 'visible';
+      setTimeout(() => banner.classList.add('revealed'), 180);
+    });
+  }
+
+  isSingle() { return this.state.vw < 900; }
+
+  move(index, half) {
+    const i = Math.max(0, Math.min(8, index));
+    this.setState({ prev: this.state.index, index: i, half: i === 0 ? 'r' : half }, () => {
+      setTimeout(() => this.revealVisible(), 120);
+      setTimeout(() => this.revealVisible(), 700);
+    });
+  }
+
+  goNext() {
+    const index = this.state.index;
+    const half = index === 0 ? 'r' : this.state.half;
+    if (!this.isSingle()) { if (index < 8) this.move(index + 1, 'l'); return; }
+    if (index === 0) this.move(1, 'l');
+    else if (half === 'l') this.move(index, 'r');
+    else if (index < 8) this.move(index + 1, 'l');
+  }
+
+  goPrev() {
+    const index = this.state.index;
+    const half = index === 0 ? 'r' : this.state.half;
+    if (index === 0) return;
+    if (!this.isSingle()) { this.move(index - 1, 'l'); return; }
+    if (half === 'r') this.move(index, 'l');
+    else this.move(index - 1, 'r');
+  }
+
+  renderVals() {
+    const acc = this.props.accent ?? '#FF5A36';
+    const paper = this.props.paper ?? '#FBF7EF';
+    const N = 8;
+    const { index, prev, vw } = this.state;
+    const single = vw < 900;
+    const half = index === 0 ? 'r' : this.state.half;
+    const s = single ? Math.min(1, (vw - 32) / 480) : Math.min(1, (vw - 48) / 960);
+    const viewW = (single ? 480 : 960) * s;
+    const viewH = 660 * s;
+    let offsetX = 0;
+    if (single) offsetX = half === 'r' ? -480 * s : 0;
+    else offsetX = index === 0 ? -240 * s : 0;
+    const ease = 'cubic-bezier(.645,.045,.355,1)';
+
+    const leaf = (i) => {
+      const flipped = i < index;
+      const moving = (index > prev && i >= prev && i < index) || (index < prev && i >= index && i < prev);
+      let d = 0;
+      if (moving) d = index > prev ? (i - prev) * 140 : (prev - 1 - i) * 140;
+      const z = flipped ? i + 1 : N - i + 1;
+      return {
+        style: 'position:absolute;left:480px;top:0;width:480px;height:660px;transform-origin:left center;transform-style:preserve-3d;' +
+          'transform: rotateY(' + (flipped ? -180 : 0) + 'deg); z-index:' + z + ';' +
+          'transition: transform 1.1s ' + ease + ' ' + d + 'ms, z-index 0s linear ' + (d + 550) + 'ms;'
+      };
+    };
+
+    const step = single ? (index === 0 ? 0 : 2 * index - (half === 'l' ? 1 : 0)) : index;
+    const total = single ? 16 : 8;
+    const atStart = step === 0;
+    const atEnd = step === total;
+
+    const singleNames = ['Cover', 'Contents'];
+    for (let i = 0; i < 14; i++) singleNames.push('Page ' + (i + 1));
+    singleNames.push('End');
+
+    const spreadNames = [
+      'Cover',
+      'Contents · Page 1',
+      'Pages 1–2 · Singles',
+      'Full cover I',
+      'Pages 5–6 · Pairs',
+      'Wide banner',
+      'Pages 9–10 · Trios',
+      'Full cover II',
+      'Pages 13–14 · Trios',
+      'Finale cover'
+    ];
+
+    const label = single ? (singleNames[step] || 'Page') : spreadNames[index];
+
+    const btn = (disabled, primary) => 'width:56px;height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center;opacity:' + (disabled ? 0.35 : 1) + ';' +
+      (primary ? 'border:none;background:' + acc + ';color:#11131A;' : 'border:1px solid #3A3F50;background:transparent;color:#FFFFFF;');
+
+    const dots = spreadNames.map((name, k) => ({
+      name,
+      pick: () => this.move(k, 'l'),
+      inner: 'display:block;height:10px;border-radius:99px;transition:width .3s ease, background .3s ease;width:' + (k === index ? 28 : 10) + 'px;background:' + (k === index ? acc : '#4A4F63') + ';'
+    }));
+
+    return {
+      accent: acc,
+      paper,
+      viewStyle: 'position:relative;margin:0 auto;width:' + viewW + 'px;height:' + (viewH + 24) + 'px;' + (single ? ' clip-path: inset(-120px 0 -120px 0);' : ''),
+      shiftStyle: 'position:absolute;left:0;top:0;width:960px;height:660px;transform-origin:0 0;transform:translateX(' + offsetX + 'px) scale(' + s + ');transition:transform .9s ' + ease + ';',
+      shadowStyle: 'position:absolute;top:640px;height:40px;border-radius:50%;background:rgba(0,0,0,0.6);filter:blur(14px);transition:left .9s ' + ease + ', width .9s ' + ease + ';left:' + (index === 0 ? 510 : 30) + 'px;width:' + (index === 0 ? 420 : 900) + 'px;',
+      bookStyle: 'position:relative;width:960px;height:660px;perspective:3200px;transition:perspective-origin .9s ' + ease + ';perspective-origin:' + (single ? (half === 'l' ? '25%' : '75%') : '50%') + ' 50%;',
+      leaf0: leaf(0),
+      leaf1: leaf(1),
+      leaf2: leaf(2),
+      leaf3: leaf(3),
+      leaf4: leaf(4),
+      leaf5: leaf(5),
+      leaf6: leaf(6),
+      leaf7: leaf(7),
+      leaf8: leaf(8),
+      label,
+      progressStyle: 'height:4px;border-radius:4px;background:' + acc + ';transition:width .6s ease;width:' + Math.round((step / total) * 100) + '%;',
+      atStart,
+      atEnd,
+      prevStyle: btn(atStart, false),
+      nextStyle: btn(atEnd, true),
+      showDots: !single,
+      dots,
+      prevPage: () => this.goPrev(),
+      nextPage: () => this.goNext(),
+      restart: () => this.move(0, 'r')
+    };
+  }
+}
+</script>
+</body>
+</html>
